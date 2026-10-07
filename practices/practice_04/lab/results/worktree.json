@@ -1,0 +1,12 @@
+{
+  "upstream_commit": "87133163e23037f850ea2858955f021d23fcedf9",
+  "fork_base": "798d9a0da24284d7e63a8dd7e1e19222fa6091f4",
+  "checkpoint_a": "3017b7783a0b8f7767a813bbb800e3803f60ea6a",
+  "checkpoint_b": "f2ae8ce5eec3c48a1c910e91c334556e604dd869",
+  "worktree": "C:/Users/HanSolo/.codex/worktrees/practice04-feature-b/ITMOv2",
+  "creation": "Codex managed worktree from practice_04 checkpoint A; detached HEAD",
+  "local_b_ref": "codex/practice04-feature-b",
+  "integration": "git merge --ff-only codex/practice04-feature-b; completed successfully",
+  "merged_tests": 56,
+  "publication": "one final Practice 04 commit on fork main base"
+}

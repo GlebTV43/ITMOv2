@@ -1,0 +1,94 @@
+Environment Review — Checkpoint A
+Generated: 2026-10-07
+Session: ses_ee8cc4b21ffeUdu2iIGcEcKIDB
+
+=== FIXES APPLIED ===
+
+1. mcp/server.py — structural validation before .get() calls
+   Bug: dispatching JSON null/array/scalar called msg.get() → AttributeError.
+   Fix (two edits):
+   a) main(): after json.loads(), check isinstance(msg, dict); if not, send
+      -32600 Invalid Request and continue (no .get() called on non-dict).
+   b) dispatch(): check raw_params is dict when present (-32600); check
+      arguments is dict when present in tools/call (-32602).
+
+2. opencode.json — PYTHONIOENCODING=utf-8 in MCP server env
+   Added "env": {"PYTHONIOENCODING": "utf-8"} to subscriber_contract server
+   config so the MCP stdio protocol is never at the mercy of the Windows
+   system codepage.
+
+3. registry.py — fixed stale module docstring
+   Old: "baseline implementation (no validation yet)... added in later turns"
+   New: "Feature A (validated subscribe) is implemented. Feature B pending."
+
+4. scripts/check.py — strengthened against false green
+   - Fails if REQUIRED_FILES (registry.py, mcp/server.py, mcp/contract.py) missing
+   - Compiles every owned .py file under LAB_DIR (excluding __pycache__)
+   - Fails if zero tests discovered
+
+5. tests/test_registry.py — unittest assertions instead of bare assert
+   All assert X → self.assertEqual/assertIs/etc. so python -O doesn't disable them.
+
+6. tests/test_feature_a.py — unittest assertions + assertRaises in mutation tests
+   - All bare assert → self.assertIs / self.assertEqual
+   - No-mutation tests now use "with self.assertRaises(...):" which both
+     verifies the exception IS raised AND confirms state afterwards.
+     (Previously swallowed exception without asserting it was raised.)
+
+7. tests/test_mcp.py — new MCP stdio regression suite (35 tests)
+   Covers: null/array/scalar envelope, malformed JSON, invalid params type,
+   invalid arguments type, missing name, unknown method, unknown tool,
+   numeric 42 via raw stdio (bypasses schema → isError+TypeError text),
+   valid Unicode name, process survives invalid input and handles subsequent ping.
+
+8. .opencode/plugins/check-after-edit.js — removed 4096-char truncation cap
+   output.slice(0, 4096) removed; full runner output now recorded to hook.jsonl.
+
+=== MCP NUMERIC 42 CLARIFICATION ===
+
+OpenCode tool call with {"name": "42"} (string):  valid → normalized "42", length 2.
+  The OpenCode MCP client JSON schema layer passes the string "42", not integer 42.
+  This was confirmed by actual tool call result above.
+
+Raw stdio with {"name": 42} (integer in JSON):  isError=True, text contains "TypeError".
+  Confirmed by test_mcp.TestMcpNumericName passing against the fixed server.
+  mcp/contract.normalize_name() DOES reject non-str inputs.
+  The coercion claim from the prior session was unsupported — it was a string invocation.
+
+=== FINAL CHECK RESULTS ===
+
+python scripts/check.py
+------------------------------------------------------------
+Syntax check: OK — no syntax errors
+Unit tests: 39 tests discovered and run
+  test_feature_a: 17 tests — all ok
+  test_mcp:       18 tests — all ok
+  test_registry:   4 tests — all ok
+Ran 39 tests in ~0.75s
+Result: OK (exit 0)
+
+python scripts/probe.py
+------------------------------------------------------------
+Summary: total=9, passed=9, failed=0
+Note: All cases passed.
+Cases:
+  empty_string              PASS  Correctly raised ValueError for empty string
+  whitespace_only           PASS  Correctly raised ValueError for whitespace-only string
+  nonstring_int             PASS  Correctly raised TypeError for integer input
+  nonstring_none            PASS  Correctly raised TypeError for None input
+  exactly_80_chars          PASS  Correctly accepted 80-char name, returned True
+  exactly_81_chars          PASS  Correctly raised ValueError for 81-char name
+  whitespace_normalisation  PASS  Normalised '  alice  ' → 'alice', stored correctly
+  ann_normalisation_dedup   PASS  Ann normalisation and deduplication correct
+  no_mutation_on_rejection  PASS  State unchanged after rejected inputs: ['existing']
+Probe result: 9/9 passed — PASS (exit 0)
+
+=== REMAINING RISKS ===
+
+- Feature B (unsubscribe) not implemented — intentional, out of scope this session.
+- Hook truncation removal: full output now logged; very long test runs could grow
+  hook.jsonl significantly. Acceptable tradeoff for accurate audit.
+- opencode.json env block uses V2 mcp.servers shape; legacy provider shape is
+  intentional migration compatibility as noted in AGENTS.md.
+- No git operations performed.
+- No secrets written to any file.

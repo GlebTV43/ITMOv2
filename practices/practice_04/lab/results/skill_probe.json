@@ -1,0 +1,136 @@
+{
+  "summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "note": "All cases passed."
+  },
+  "cases": [
+    {
+      "id": "empty_string",
+      "description": "Empty string raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for empty string"
+    },
+    {
+      "id": "whitespace_only",
+      "description": "Whitespace-only string raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for whitespace-only string"
+    },
+    {
+      "id": "nonstring_int",
+      "description": "Integer input raises TypeError",
+      "status": "PASS",
+      "detail": "Correctly raised TypeError for integer input"
+    },
+    {
+      "id": "nonstring_none",
+      "description": "None input raises TypeError",
+      "status": "PASS",
+      "detail": "Correctly raised TypeError for None input"
+    },
+    {
+      "id": "exactly_80_chars",
+      "description": "80-character name is valid",
+      "status": "PASS",
+      "detail": "Correctly accepted 80-char name, returned True"
+    },
+    {
+      "id": "exactly_81_chars",
+      "description": "81-character name raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for 81-char name"
+    },
+    {
+      "id": "whitespace_normalisation",
+      "description": "Whitespace stripped before storage",
+      "status": "PASS",
+      "detail": "Normalised '  alice  ' → 'alice', stored correctly"
+    },
+    {
+      "id": "ann_normalisation_dedup",
+      "description": "Normalised duplicates detected correctly",
+      "status": "PASS",
+      "detail": "Ann normalisation and deduplication correct"
+    },
+    {
+      "id": "no_mutation_on_rejection",
+      "description": "Rejected inputs do not mutate state",
+      "status": "PASS",
+      "detail": "State unchanged after rejected inputs: ['existing']"
+    },
+    {
+      "id": "b_unsubscribe_present",
+      "description": "Unsubscribe existing name returns True",
+      "status": "PASS",
+      "detail": "Unsubscribed present name, returned True, registry is empty"
+    },
+    {
+      "id": "b_unsubscribe_absent",
+      "description": "Unsubscribe absent name returns False",
+      "status": "PASS",
+      "detail": "Unsubscribing absent name correctly returned False"
+    },
+    {
+      "id": "b_repeated_unsubscribe",
+      "description": "Repeated unsubscribe is idempotent",
+      "status": "PASS",
+      "detail": "Repeated unsubscribe is idempotent, returned False"
+    },
+    {
+      "id": "b_padded_name",
+      "description": "Unsubscribe with surrounding whitespace normalises correctly",
+      "status": "PASS",
+      "detail": "Padded '  alice  ' correctly removes 'alice'"
+    },
+    {
+      "id": "b_resubscribe_after_removal",
+      "description": "Resubscribe after removal is treated as new",
+      "status": "PASS",
+      "detail": "Resubscribe after removal correctly returns True"
+    },
+    {
+      "id": "b_preserves_other_subscribers",
+      "description": "Unsubscribe does not affect other subscribers",
+      "status": "PASS",
+      "detail": "Removing 'alice' preserved 'bob'"
+    },
+    {
+      "id": "b_exactly_80_unicode",
+      "description": "80 Unicode characters accepted by unsubscribe",
+      "status": "PASS",
+      "detail": "80-char Unicode name correctly accepted by unsubscribe"
+    },
+    {
+      "id": "b_exactly_81_unicode",
+      "description": "81 Unicode characters rejected by unsubscribe",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for 81-char Unicode name"
+    },
+    {
+      "id": "b_nonstring_raises_type_error",
+      "description": "Non-string input raises TypeError",
+      "status": "PASS",
+      "detail": "Correctly raised TypeError for integer input"
+    },
+    {
+      "id": "b_empty_string",
+      "description": "Empty string raises ValueError in unsubscribe",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for empty string"
+    },
+    {
+      "id": "b_whitespace_only",
+      "description": "Whitespace-only raises ValueError in unsubscribe",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for whitespace-only input"
+    },
+    {
+      "id": "b_no_mutation_on_invalid",
+      "description": "Invalid unsubscribe inputs do not mutate state",
+      "status": "PASS",
+      "detail": "State unchanged after invalid unsubscribe calls: ['alice']"
+    }
+  ]
+}

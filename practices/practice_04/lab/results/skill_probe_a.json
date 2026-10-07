@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "note": "All cases passed."
+  },
+  "cases": [
+    {
+      "id": "empty_string",
+      "description": "Empty string raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for empty string"
+    },
+    {
+      "id": "whitespace_only",
+      "description": "Whitespace-only string raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for whitespace-only string"
+    },
+    {
+      "id": "nonstring_int",
+      "description": "Integer input raises TypeError",
+      "status": "PASS",
+      "detail": "Correctly raised TypeError for integer input"
+    },
+    {
+      "id": "nonstring_none",
+      "description": "None input raises TypeError",
+      "status": "PASS",
+      "detail": "Correctly raised TypeError for None input"
+    },
+    {
+      "id": "exactly_80_chars",
+      "description": "80-character name is valid",
+      "status": "PASS",
+      "detail": "Correctly accepted 80-char name, returned True"
+    },
+    {
+      "id": "exactly_81_chars",
+      "description": "81-character name raises ValueError",
+      "status": "PASS",
+      "detail": "Correctly raised ValueError for 81-char name"
+    },
+    {
+      "id": "whitespace_normalisation",
+      "description": "Whitespace stripped before storage",
+      "status": "PASS",
+      "detail": "Normalised '  alice  ' → 'alice', stored correctly"
+    },
+    {
+      "id": "ann_normalisation_dedup",
+      "description": "Normalised duplicates detected correctly",
+      "status": "PASS",
+      "detail": "Ann normalisation and deduplication correct"
+    },
+    {
+      "id": "no_mutation_on_rejection",
+      "description": "Rejected inputs do not mutate state",
+      "status": "PASS",
+      "detail": "State unchanged after rejected inputs: ['existing']"
+    }
+  ]
+}
