@@ -1,0 +1,71 @@
+{
+  "runner": "scripts/mcp_demo.py",
+  "note": "Evidence of real subprocess MCP calls. Not an OpenCode invocation.",
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "tests": [
+    {
+      "test": "initialize returns protocolVersion",
+      "status": "PASS",
+      "detail": "got: {'jsonrpc': '2.0', 'id': 1, 'result': {'protocolVersion': '2024-11-05', 'capabilities': {'tools': {}}, 'serverInfo': {'name': 'subscriber_contract', 'version': '1.0.0'}}}"
+    },
+    {
+      "test": "initialized notification produces no response",
+      "status": "PASS",
+      "detail": "unexpected responses: []"
+    },
+    {
+      "test": "tools/list contains inspect_subscriber",
+      "status": "PASS",
+      "detail": "tools: ['inspect_subscriber']"
+    },
+    {
+      "test": "inspect_subscriber valid name normalises correctly",
+      "status": "PASS",
+      "detail": "payload: {'normalized': 'alice', 'length': 5, 'valid': True}"
+    },
+    {
+      "test": "inspect_subscriber empty string returns isError with ValueError",
+      "status": "PASS",
+      "detail": "isError=True, text='ValueError: name is empty after stripping whitespace'"
+    },
+    {
+      "test": "inspect_subscriber integer returns isError with TypeError",
+      "status": "PASS",
+      "detail": "isError=True, text=\"TypeError: name must be str, got 'int'\""
+    },
+    {
+      "test": "inspect_subscriber 80-char name is valid",
+      "status": "PASS",
+      "detail": "payload: {'normalized': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'length': 80, 'valid': True}"
+    },
+    {
+      "test": "inspect_subscriber 81-char name returns isError with ValueError",
+      "status": "PASS",
+      "detail": "isError=True, text='ValueError: name has 81 Unicode characters after normalisation; maximum is 80'"
+    },
+    {
+      "test": "ping returns empty result",
+      "status": "PASS",
+      "detail": "got: {'jsonrpc': '2.0', 'id': 2, 'result': {}}"
+    },
+    {
+      "test": "unknown method returns error without crashing",
+      "status": "PASS",
+      "detail": "got: {'jsonrpc': '2.0', 'id': 2, 'error': {'code': -32601, 'message': \"Method not found: 'no_such_method'\"}}"
+    },
+    {
+      "test": "malformed JSON returns error response without crashing",
+      "status": "PASS",
+      "detail": "responses: [{'jsonrpc': '2.0', 'id': 1, 'result': {'protocolVersion': '2024-11-05', 'capabilities': {'tools': {}}, 'serverInfo': {'name': 'subscriber_contract', 'version': '1.0.0'}}}, {'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': 'Parse error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)'}}, {'jsonrpc': '2.0', 'id': 3, 'result': {}}]"
+    },
+    {
+      "test": "server continues processing after malformed JSON",
+      "status": "PASS",
+      "detail": "no ping response in: [{'jsonrpc': '2.0', 'id': 1, 'result': {'protocolVersion': '2024-11-05', 'capabilities': {'tools': {}}, 'serverInfo': {'name': 'subscriber_contract', 'version': '1.0.0'}}}, {'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': 'Parse error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)'}}, {'jsonrpc': '2.0', 'id': 3, 'result': {}}]"
+    }
+  ]
+}

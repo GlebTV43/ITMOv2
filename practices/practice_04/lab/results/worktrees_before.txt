@@ -1,0 +1,7 @@
+worktree C:/Users/HanSolo/avito_ai/ITMOv2
+HEAD 3017b7783a0b8f7767a813bbb800e3803f60ea6a
+branch refs/heads/practice_04
+
+worktree C:/Users/HanSolo/.codex/worktrees/practice04-feature-b/ITMOv2
+HEAD 3017b7783a0b8f7767a813bbb800e3803f60ea6a
+detached

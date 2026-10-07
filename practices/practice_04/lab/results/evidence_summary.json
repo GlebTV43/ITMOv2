@@ -1,0 +1,35 @@
+{
+  "feature_a": {
+    "session": "ses_ee8cc4b21ffeUdu2iIGcEcKIDB",
+    "skill_calls": 1,
+    "completed_reads": 10,
+    "mcp_success": 3,
+    "mcp_errors": 2,
+    "automatic_fail": 1,
+    "automatic_pass": 4
+  },
+  "feature_b": {
+    "session": "ses_ee8c28670ffeafQ1sUtyVNKOwC",
+    "skill_calls": 1,
+    "completed_reads": 10,
+    "mcp_success": 1,
+    "mcp_errors": 1,
+    "automatic_fail": 1,
+    "automatic_pass": 4
+  },
+  "handoff": {
+    "session": "ses_ee8baf8aaffedpwF2RM1kPxtI8",
+    "skill_calls": 1,
+    "completed_reads": 9,
+    "mcp_success": 0,
+    "mcp_errors": 0,
+    "automatic_fail": 0,
+    "automatic_pass": 0
+  },
+  "probe": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "note": "All cases passed."
+  }
+}
