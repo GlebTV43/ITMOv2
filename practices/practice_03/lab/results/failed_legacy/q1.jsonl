@@ -1,0 +1,18 @@
+{
+  "question_idx": 1,
+  "question": "Прочитай файлы в текущей директории и ответь: как запустить тесты? Укажи файл и строку.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92e0fc4ffelIg9ZB7sdqYjgj",
+  "wall_seconds": 5.13,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384220437, 'sessionID': 'ses_ee92e0fc4ffelIg9ZB7sdqYjgj', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_80f7a253'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

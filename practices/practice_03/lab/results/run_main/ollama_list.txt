@@ -1,0 +1,6 @@
+NAME                            ID              SIZE      MODIFIED
+itmo-practice03-agent:latest    898ec4208c2a    3.4 GB    28 minutes ago
+itmo-practice03-local:latest    82b123f1d32a    3.4 GB    28 minutes ago
+itmo-agent:latest               3465bc38f59d    3.4 GB    12 days ago
+itmo-local:latest               4bd0b9686aa4    3.4 GB    12 days ago
+qwen3.5:4b                      2a654d98e6fb    3.4 GB    12 days ago

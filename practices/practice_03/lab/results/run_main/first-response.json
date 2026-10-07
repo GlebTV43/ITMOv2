@@ -1,0 +1,40 @@
+{
+  "request": {
+    "model": "itmo-practice03-local",
+    "messages": [
+      {
+        "role": "user",
+        "content": "# Notify Mini\nУчебный сервис подписки. Подписчики хранятся в памяти процесса.\nВ service.py функция subscribe добавляет непустое имя в множество.\nПовторное добавление имени не создаёт дубликат.\n\nПроверка: make test.\nЗависимости: стандартная библиотека Python 3.10+.\n\n\nКакая CI-система запускает тесты проекта?"
+      }
+    ],
+    "stream": false,
+    "think": false,
+    "options": {
+      "temperature": 0.2,
+      "seed": 42,
+      "num_ctx": 4096,
+      "num_predict": 512
+    }
+  },
+  "response": {
+    "model": "itmo-practice03-local",
+    "created_at": "2026-10-07T15:00:38.9320197Z",
+    "message": {
+      "role": "assistant",
+      "content": "В предоставленных материалах нет ответа."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 11428170500,
+    "load_duration": 7248844900,
+    "prompt_eval_count": 212,
+    "prompt_eval_cached_count": 0,
+    "prompt_eval_duration": 3492411000,
+    "eval_count": 9,
+    "eval_duration": 650331000
+  },
+  "wall_seconds": 11.824356121999926,
+  "load_seconds": 7.2488449,
+  "total_seconds": 11.4281705,
+  "decode_tokens_per_second": 13.839106547281308
+}

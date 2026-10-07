@@ -1,0 +1,18 @@
+{
+  "question_idx": 2,
+  "question": "Прочитай service.py. Что произойдёт, если вызвать subscribe с пустым именем? Процитируй код.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92dfe8dffefLD3j0iHdeKsXJ",
+  "wall_seconds": 4.45,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384224906, 'sessionID': 'ses_ee92dfe8dffefLD3j0iHdeKsXJ', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_95bc29cd'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

@@ -1,0 +1,18 @@
+{
+  "question_idx": 6,
+  "question": "Прочитай service.py. Что произойдёт при подписке имени 'Ann', а затем ' Ann ' (с пробелами)? Будут ли это два разных подписчика? Объясни на основе кода.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92dc4e9ffe8Wo98j0Vabnw4t",
+  "wall_seconds": 3.12,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384239019, 'sessionID': 'ses_ee92dc4e9ffe8Wo98j0Vabnw4t', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_8f968c9a'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

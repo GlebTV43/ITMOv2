@@ -1,0 +1,13 @@
+Standard library only: ready
+make -C demo test
+make[1]: Entering directory '/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_03/lab/demo'
+python3 -m unittest -v
+test_duplicate (test_service.SubscribeTest.test_duplicate) ... ok
+test_empty (test_service.SubscribeTest.test_empty) ... ok
+test_subscribe (test_service.SubscribeTest.test_subscribe) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+make[1]: Leaving directory '/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_03/lab/demo'

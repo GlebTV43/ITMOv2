@@ -1,4 +1,8 @@
 FROM qwen3.5:4b
+# num_ctx 65536: требуется для агентского режима OpenCode (большой контекст инструментов).
+# temperature 0.2: низкая случайность; детерминизм при повторных запусках не гарантирован.
+# num_predict 2048: агент может давать более развёрнутые пояснения.
 PARAMETER num_ctx 65536
 PARAMETER temperature 0.2
+PARAMETER num_predict 2048
 
