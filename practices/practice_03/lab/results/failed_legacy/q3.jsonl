@@ -1,0 +1,18 @@
+{
+  "question_idx": 3,
+  "question": "Прочитай все файлы проекта. Где реализована функция unsubscribe? Проверь предпосылку вопроса.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92dec65ffe2uYQDtgWcAZx4i",
+  "wall_seconds": 4.59,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384229498, 'sessionID': 'ses_ee92dec65ffe2uYQDtgWcAZx4i', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_eaa618c7'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

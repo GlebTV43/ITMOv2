@@ -1,0 +1,18 @@
+{
+  "model": "ollama/itmo-practice03-agent",
+  "opencode_bin": "/home/gleb_linux/.opencode/bin/opencode",
+  "ollama_url": "http://127.0.0.1:11434",
+  "total_wall_seconds": 67.66,
+  "note": "temperature=0.2 снижает случайность, детерминизм не гарантирован. Оценка ответов — manual review vs EXPECTED.md.",
+  "questions": [],
+  "demo": {
+    "session_id": "ses_ee90c6957ffeGd01bW4q3MUbBh",
+    "exit_code": 0,
+    "wall_seconds": 67.57,
+    "tools_called": [
+      "read"
+    ],
+    "has_read_confirmed": true,
+    "answer_preview": "Файл `service.py` содержит простой словарь функций для подписки.\n\n**Функция `subscribe(\"Ann\")`:**\n\n1. **Проверка:** Проверяет, что имя не пустое (`\"An"
+  }
+}

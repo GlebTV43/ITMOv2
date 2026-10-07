@@ -1,0 +1,18 @@
+{
+  "question_idx": 5,
+  "question": "Прочитай service.py и README. Сохраняются ли подписки после перезапуска процесса? Процитируй код.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92dd138ffe9IAZFCN8kgEc21",
+  "wall_seconds": 3.24,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384235893, 'sessionID': 'ses_ee92dd138ffe9IAZFCN8kgEc21', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_673110e8'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

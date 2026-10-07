@@ -1,0 +1,18 @@
+{
+  "question_idx": 4,
+  "question": "Прочитай файлы. Какая CI-система настроена для запуска тестов? Если сведений нет — скажи об этом.",
+  "model": "ollama/itmo-practice03-agent",
+  "answer_text": "",
+  "tool_events": [],
+  "reasoning_filtered_count": 0,
+  "session_id": "ses_ee92ddde3ffeuu76hVwbzzPo1Y",
+  "wall_seconds": 3.13,
+  "exit_code": 1,
+  "parse_errors": [
+    "{'type': 'error', 'timestamp': 1791384232654, 'sessionID': 'ses_ee92ddde3ffeuu76hVwbzzPo1Y', 'error': {'name': 'UnknownError', 'data': {'message': 'Unexpected server error. Check server logs for details.', 'ref': 'err_b8fa2e32'}}}"
+  ],
+  "raw_event_types": [
+    "error"
+  ],
+  "assessment": "needs_manual_review"
+}

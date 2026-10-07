@@ -1,0 +1,100 @@
+{
+  "note": "Собрано из q1.json..q5.json и q_demo.json. sum_wall_q1_q5 — сумма времён пяти вопросов, не общее время практики.",
+  "model": "ollama/itmo-practice03-agent",
+  "opencode_bin": "/home/gleb_linux/.opencode/bin/opencode",
+  "ollama_url": "http://127.0.0.1:11434",
+  "sum_wall_q1_q5_seconds": 380.28,
+  "questions": [
+    {
+      "q": 1,
+      "session_id": "ses_ee92a5739ffe7SKGgGBeLsp4TC",
+      "exit_code": 0,
+      "wall_seconds": 88.65,
+      "tools_called": [
+        "read",
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "read_completed_count": 4,
+      "has_read_confirmed": true,
+      "answer_preview": "Для запуска тестов можно использовать Makefile:\n\n**`Makefile`, строка `3`:** `python3 -m unittest -v`\n\nИли напрямую через Python (строки `23-25` в `te",
+      "parse_errors": []
+    },
+    {
+      "q": 2,
+      "session_id": "ses_ee927e3d8ffezpzbqwr1UFcOy8",
+      "exit_code": 0,
+      "wall_seconds": 83.79,
+      "tools_called": [
+        "read",
+        "glob",
+        "glob",
+        "read",
+        "read"
+      ],
+      "read_completed_count": 1,
+      "has_read_confirmed": true,
+      "answer_preview": "[**service.py**, строки 4-8]\n\n```python\ndef subscribe(name):\n    if not name.strip():\n        raise ValueError(\"empty name\")\n    subscribers.add(name.",
+      "parse_errors": []
+    },
+    {
+      "q": 3,
+      "session_id": "ses_ee9256130ffeg0IH1hlm5cs572",
+      "exit_code": 0,
+      "wall_seconds": 61.19,
+      "tools_called": [
+        "glob",
+        "read"
+      ],
+      "read_completed_count": 1,
+      "has_read_confirmed": true,
+      "answer_preview": "Функция `unsubscribe` отсутствует в проекте. Реализована только функция `subscribe`.",
+      "parse_errors": []
+    },
+    {
+      "q": 4,
+      "session_id": "ses_ee92378e8ffepMkUUAK5fC1VeU",
+      "exit_code": 0,
+      "wall_seconds": 55.94,
+      "tools_called": [
+        "glob",
+        "glob",
+        "glob",
+        "glob"
+      ],
+      "read_completed_count": 0,
+      "has_read_confirmed": false,
+      "answer_preview": "Сведений о настроённой CI-системе в файлах нет.",
+      "parse_errors": []
+    },
+    {
+      "q": 5,
+      "session_id": "ses_ee9216cc8ffeu6xuKxPC7zRt3t",
+      "exit_code": 0,
+      "wall_seconds": 90.71,
+      "tools_called": [
+        "glob",
+        "glob",
+        "read",
+        "read"
+      ],
+      "read_completed_count": 2,
+      "has_read_confirmed": true,
+      "answer_preview": "Нет, подписки **не сохраняются** после перезапуска процесса.\n\nСогласно README (строка 2): «Подписчики хранятся в памяти». Поскольку переменная `subscr",
+      "parse_errors": []
+    }
+  ],
+  "demo": {
+    "session_id": "ses_ee9200a76ffel0n3OSlbZEZoy4",
+    "exit_code": 0,
+    "wall_seconds": 69.55,
+    "tools_called": [
+      "glob",
+      "read"
+    ],
+    "has_read_confirmed": true,
+    "answer_preview": "В коде функция `subscribe` использует метод `.strip()` для удаления пробелов из имени.\n\n1. При подписке **'Ann'**: имя проходит `strip()` и записывает"
+  }
+}

@@ -1,28 +1,36 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/itmo-agent",
-  "small_model": "ollama/itmo-agent",
+  "model": "ollama/itmo-practice03-agent",
+  "small_model": "ollama/itmo-practice03-agent",
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama local",
+      "name": "Ollama local (bridge 127.0.0.1:11434)",
       "options": {
-        "baseURL": "http://localhost:11434/v1"
+        "baseURL": "http://127.0.0.1:11434/v1"
       },
       "models": {
-        "itmo-agent": {
-          "name": "ITMO local 64k",
+        "itmo-practice03-agent": {
+          "name": "itmo-practice03-agent (Qwen3.5 4B Q4_K_M 64k)",
           "limit": {
             "context": 65536,
-            "output": 4096
+            "output": 2048
+          }
+        },
+        "itmo-practice03-local": {
+          "name": "itmo-practice03-local (Qwen3.5 4B Q4_K_M 8k)",
+          "limit": {
+            "context": 8192,
+            "output": 512
           }
         }
       }
     }
   },
+  "enabled_providers": ["ollama"],
   "agent": {
     "local-guide": {
-      "description": "Read-only local repository assistant",
+      "description": "Read-only local repository assistant (local model only, no cloud)",
       "mode": "primary",
       "prompt": "{file:./repo-system.txt}",
       "steps": 8,
@@ -35,4 +43,3 @@
     }
   }
 }
-
