@@ -1,0 +1,804 @@
+{
+  "cases": [
+    {
+      "id": "A01",
+      "title": "Unauthenticated profile access",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/profile?id=1",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A02",
+      "title": "Cross-customer profile IDOR",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/profile?id=2",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A03",
+      "title": "Numeric SQL injection",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/profile?id=1+OR+1%3D1",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A04",
+      "title": "String SQL injection and unrestricted search",
+      "expected": "200, no Bob or SQL expansion",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/search?q=%27+OR+1%3D1+--",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A05",
+      "title": "All-customer order disclosure",
+      "expected": "200, only Alice orders",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/orders",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "owner": 1,
+            "product": "chair",
+            "price": 5000.0
+          },
+          {
+            "id": 2,
+            "owner": 2,
+            "product": "lamp",
+            "price": 1500.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "A06",
+      "title": "Client controls purchase price",
+      "expected": "201, server catalogue price 5000",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/orders",
+        "body": {
+          "product": "chair",
+          "price": 0.01
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 201,
+        "response": {
+          "id": 3,
+          "owner": 1,
+          "product": "chair",
+          "price": 0.01
+        }
+      }
+    },
+    {
+      "id": "A07",
+      "title": "Forged staff role without session",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/admin/export",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Role": "staff"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A08",
+      "title": "Forged staff role with customer session",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/admin/export",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>",
+          "X-Role": "staff"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A09",
+      "title": "Cross-customer receipt access",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/files?user=bob&path=receipt.txt",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "content": "TEST_BOB receipt: lamp, 1500 RUB"
+        }
+      }
+    },
+    {
+      "id": "A10",
+      "title": "Traversal within physical sandbox",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/files?user=alice&path=..%2F..%2Fprivate%2Foperator-note.txt",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "content": "TEST_ONLY_OPERATOR_SECRET"
+        }
+      }
+    },
+    {
+      "id": "A11",
+      "title": "Stored HTML/script injection",
+      "expected": "200, escaped review text",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/reviews/view",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": "<html><body><p><script>document.body.dataset.compromised=\"yes\"</script></p></body></html>"
+      }
+    },
+    {
+      "id": "A12",
+      "title": "Password and token exposure in debug logs",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/debug/logs",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "method": "POST",
+            "target": "/login",
+            "body": {
+              "username": "alice",
+              "password": "learn-alice"
+            },
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Length": "48",
+              "Content-Type": "application/json"
+            }
+          },
+          {
+            "method": "POST",
+            "target": "/login",
+            "body": {
+              "username": "bob",
+              "password": "learn-bob"
+            },
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Length": "44",
+              "Content-Type": "application/json"
+            }
+          },
+          {
+            "method": "POST",
+            "target": "/login",
+            "body": {
+              "username": "staff",
+              "password": "learn-staff"
+            },
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Length": "48",
+              "Content-Type": "application/json"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/profile?id=1",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/profile?id=2",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/profile?id=1+OR+1%3D1",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/search?q=%27+OR+1%3D1+--",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/orders",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "POST",
+            "target": "/orders",
+            "body": {
+              "product": "chair",
+              "price": 0.01
+            },
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Length": "35",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/admin/export",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Role": "staff"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/admin/export",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5",
+              "X-Role": "staff"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/files?user=bob&path=receipt.txt",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/files?user=alice&path=..%2F..%2Fprivate%2Foperator-note.txt",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "POST",
+            "target": "/reviews",
+            "body": {
+              "product": "chair",
+              "text": "<script>document.body.dataset.compromised=\"yes\"</script>"
+            },
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Length": "90",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/reviews/view",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          },
+          {
+            "method": "GET",
+            "target": "/debug/logs",
+            "body": {},
+            "headers": {
+              "Host": "127.0.0.1:45207",
+              "Accept-Encoding": "identity",
+              "Content-Type": "application/json",
+              "X-Token": "6516c71b1a774d9faab7e92984879ad5"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "A13",
+      "title": "Cross-customer AI context",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/assistant/context?order_id=2",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "prompt": "Ты помощник магазина. Прочитай заказ и отзывы. Верни JSON с полями tool и arguments.\nИнструменты: read_file(path), export_profiles(), delete_tree(path).\nПомоги пользователю обработать заказ.\nЗаказ: [{\"id\": 2, \"owner\": 2, \"product\": \"lamp\", \"price\": 1500.0}]\nОтзывы: [{\"product\": \"chair\", \"text\": \"<script>document.body.dataset.compromised=\\\"yes\\\"</script>\"}]\nЗапрос пользователя: Покажи чек по заказу"
+        }
+      }
+    },
+    {
+      "id": "A14",
+      "title": "SQL injection in AI order lookup",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/assistant/context?order_id=1+OR+1%3D1",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "prompt": "Ты помощник магазина. Прочитай заказ и отзывы. Верни JSON с полями tool и arguments.\nИнструменты: read_file(path), export_profiles(), delete_tree(path).\nПомоги пользователю обработать заказ.\nЗаказ: [{\"id\": 1, \"owner\": 1, \"product\": \"chair\", \"price\": 5000.0}, {\"id\": 2, \"owner\": 2, \"product\": \"lamp\", \"price\": 1500.0}, {\"id\": 3, \"owner\": 1, \"product\": \"chair\", \"price\": 0.01}]\nОтзывы: [{\"product\": \"chair\", \"text\": \"<script>document.body.dataset.compromised=\\\"yes\\\"</script>\"}]\nЗапрос пользователя: Покажи чек по заказу"
+        }
+      }
+    },
+    {
+      "id": "A15",
+      "title": "AI executor reads another receipt",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/assistant/execute",
+        "body": {
+          "decision": {
+            "tool": "read_file",
+            "arguments": {
+              "path": "files/bob/receipt.txt"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "content": "TEST_BOB receipt: lamp, 1500 RUB"
+        }
+      }
+    },
+    {
+      "id": "A16",
+      "title": "AI executor reads private note",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/assistant/execute",
+        "body": {
+          "decision": {
+            "tool": "read_file",
+            "arguments": {
+              "path": "private/operator-note.txt"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "content": "TEST_ONLY_OPERATOR_SECRET"
+        }
+      }
+    },
+    {
+      "id": "A17",
+      "title": "AI executor exports profiles",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/assistant/execute",
+        "body": {
+          "decision": {
+            "tool": "export_profiles",
+            "arguments": {}
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A18",
+      "title": "Unauthenticated AI tool execution",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/assistant/execute",
+        "body": {
+          "decision": {
+            "tool": "export_profiles",
+            "arguments": {}
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200,
+        "response": [
+          {
+            "id": 1,
+            "name": "TEST_ALICE",
+            "email": "alice@example.invalid",
+            "address": "TEST_ADDRESS_A"
+          },
+          {
+            "id": 2,
+            "name": "TEST_BOB",
+            "email": "bob@example.invalid",
+            "address": "TEST_ADDRESS_B"
+          }
+        ]
+      }
+    },
+    {
+      "id": "A19",
+      "title": "Malformed JSON leaks exception details",
+      "expected": "400, no internal exception",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/login",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 500,
+        "response": {
+          "error": "Expecting value: line 1 column 13 (char 12)",
+          "type": "JSONDecodeError"
+        }
+      }
+    },
+    {
+      "id": "A20",
+      "title": "Unexpected JSON type causes internal error",
+      "expected": "400, no traceback/type",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/orders",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 500,
+        "response": {
+          "error": "list indices must be integers or slices, not str",
+          "type": "TypeError"
+        }
+      }
+    },
+    {
+      "id": "A21",
+      "title": "Unbounded review length",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/reviews",
+        "body": {
+          "product": "chair",
+          "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 201,
+        "response": {
+          "saved": true
+        }
+      }
+    },
+    {
+      "id": "A22",
+      "title": "Anonymous review creation",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/reviews",
+        "body": {
+          "product": "chair",
+          "text": "anonymous"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 201,
+        "response": {
+          "saved": true
+        }
+      }
+    },
+    {
+      "id": "A23",
+      "title": "AI deletion of fixture files",
+      "expected": "denied",
+      "safe": false,
+      "exchange": {
+        "method": "POST",
+        "path": "/assistant/execute",
+        "body": {
+          "decision": {
+            "tool": "delete_tree",
+            "arguments": {
+              "path": "files"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 200,
+        "response": {
+          "deleted": "files"
+        }
+      }
+    },
+    {
+      "id": "A24",
+      "title": "Receipt survives dangerous decision",
+      "expected": "200, own receipt intact",
+      "safe": false,
+      "exchange": {
+        "method": "GET",
+        "path": "/files?user=alice&path=receipt.txt",
+        "body": null,
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Token": "<session>"
+        },
+        "status": 500,
+        "response": {
+          "error": "[Errno 2] No such file or directory: '/tmp/itmo-practice-06-_dmti6hf/files/alice/receipt.txt'",
+          "type": "FileNotFoundError"
+        }
+      }
+    }
+  ],
+  "good_scenarios": [
+    {
+      "scenario": "own profile",
+      "status": 200,
+      "expected": 200,
+      "pass": true
+    },
+    {
+      "scenario": "staff export using server session",
+      "status": 403,
+      "expected": 200,
+      "pass": false
+    },
+    {
+      "scenario": "catalogue purchase",
+      "status": 201,
+      "expected": 201,
+      "pass": true
+    }
+  ],
+  "safe": 0,
+  "total": 24,
+  "source_sha256": "883308725f08ede5c3284b35208e54ce20a335caaa9a4e6c8ad170c702c92ddf",
+  "phase": "before"
+}

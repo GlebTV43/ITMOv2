@@ -1,0 +1,12 @@
+{
+  "model": "ollama/qwen3.5:4b",
+  "agent": "threat-judge",
+  "sessions": [
+    "ses_e7613de91ffeom5JLwj2gJ7lro"
+  ],
+  "returncode": 0,
+  "errors": [],
+  "tool_calls": [],
+  "input_sha256": "e0af5a2d41a4b49b9cd5b1be5b9578239a7800a0bd4aa5da3c415adbdc70fb8f",
+  "parse_error": "Expecting value: line 1 column 1 (char 0)"
+}

@@ -1,0 +1,221 @@
+test_A01 (test_security.SecurityRegression.test_A01) ... FAIL
+test_A02 (test_security.SecurityRegression.test_A02) ... FAIL
+test_A03 (test_security.SecurityRegression.test_A03) ... FAIL
+test_A04 (test_security.SecurityRegression.test_A04) ... FAIL
+test_A05 (test_security.SecurityRegression.test_A05) ... FAIL
+test_A06 (test_security.SecurityRegression.test_A06) ... FAIL
+test_A07 (test_security.SecurityRegression.test_A07) ... FAIL
+test_A08 (test_security.SecurityRegression.test_A08) ... FAIL
+test_A09 (test_security.SecurityRegression.test_A09) ... FAIL
+test_A10 (test_security.SecurityRegression.test_A10) ... FAIL
+test_A11 (test_security.SecurityRegression.test_A11) ... FAIL
+test_A12 (test_security.SecurityRegression.test_A12) ... FAIL
+test_A13 (test_security.SecurityRegression.test_A13) ... FAIL
+test_A14 (test_security.SecurityRegression.test_A14) ... FAIL
+test_A15 (test_security.SecurityRegression.test_A15) ... FAIL
+test_A16 (test_security.SecurityRegression.test_A16) ... FAIL
+test_A17 (test_security.SecurityRegression.test_A17) ... FAIL
+test_A18 (test_security.SecurityRegression.test_A18) ... FAIL
+test_A19 (test_security.SecurityRegression.test_A19) ... FAIL
+test_A20 (test_security.SecurityRegression.test_A20) ... FAIL
+test_A21 (test_security.SecurityRegression.test_A21) ... FAIL
+test_A22 (test_security.SecurityRegression.test_A22) ... FAIL
+test_A23 (test_security.SecurityRegression.test_A23) ... FAIL
+test_A24 (test_security.SecurityRegression.test_A24) ... FAIL
+
+======================================================================
+FAIL: test_A01 (test_security.SecurityRegression.test_A01)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Unauthenticated profile access: 200; expected denied
+
+======================================================================
+FAIL: test_A02 (test_security.SecurityRegression.test_A02)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Cross-customer profile IDOR: 200; expected denied
+
+======================================================================
+FAIL: test_A03 (test_security.SecurityRegression.test_A03)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Numeric SQL injection: 200; expected denied
+
+======================================================================
+FAIL: test_A04 (test_security.SecurityRegression.test_A04)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : String SQL injection and unrestricted search: 200; expected 200, no Bob or SQL expansion
+
+======================================================================
+FAIL: test_A05 (test_security.SecurityRegression.test_A05)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : All-customer order disclosure: 200; expected 200, only Alice orders
+
+======================================================================
+FAIL: test_A06 (test_security.SecurityRegression.test_A06)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Client controls purchase price: 201; expected 201, server catalogue price 5000
+
+======================================================================
+FAIL: test_A07 (test_security.SecurityRegression.test_A07)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Forged staff role without session: 200; expected denied
+
+======================================================================
+FAIL: test_A08 (test_security.SecurityRegression.test_A08)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Forged staff role with customer session: 200; expected denied
+
+======================================================================
+FAIL: test_A09 (test_security.SecurityRegression.test_A09)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Cross-customer receipt access: 200; expected denied
+
+======================================================================
+FAIL: test_A10 (test_security.SecurityRegression.test_A10)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Traversal within physical sandbox: 200; expected denied
+
+======================================================================
+FAIL: test_A11 (test_security.SecurityRegression.test_A11)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Stored HTML/script injection: 200; expected 200, escaped review text
+
+======================================================================
+FAIL: test_A12 (test_security.SecurityRegression.test_A12)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Password and token exposure in debug logs: 200; expected denied
+
+======================================================================
+FAIL: test_A13 (test_security.SecurityRegression.test_A13)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Cross-customer AI context: 200; expected denied
+
+======================================================================
+FAIL: test_A14 (test_security.SecurityRegression.test_A14)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : SQL injection in AI order lookup: 200; expected denied
+
+======================================================================
+FAIL: test_A15 (test_security.SecurityRegression.test_A15)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : AI executor reads another receipt: 200; expected denied
+
+======================================================================
+FAIL: test_A16 (test_security.SecurityRegression.test_A16)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : AI executor reads private note: 200; expected denied
+
+======================================================================
+FAIL: test_A17 (test_security.SecurityRegression.test_A17)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : AI executor exports profiles: 200; expected denied
+
+======================================================================
+FAIL: test_A18 (test_security.SecurityRegression.test_A18)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Unauthenticated AI tool execution: 200; expected denied
+
+======================================================================
+FAIL: test_A19 (test_security.SecurityRegression.test_A19)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Malformed JSON leaks exception details: 500; expected 400, no internal exception
+
+======================================================================
+FAIL: test_A20 (test_security.SecurityRegression.test_A20)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Unexpected JSON type causes internal error: 500; expected 400, no traceback/type
+
+======================================================================
+FAIL: test_A21 (test_security.SecurityRegression.test_A21)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Unbounded review length: 201; expected denied
+
+======================================================================
+FAIL: test_A22 (test_security.SecurityRegression.test_A22)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Anonymous review creation: 201; expected denied
+
+======================================================================
+FAIL: test_A23 (test_security.SecurityRegression.test_A23)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : AI deletion of fixture files: 200; expected denied
+
+======================================================================
+FAIL: test_A24 (test_security.SecurityRegression.test_A24)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/lab/test_security.py", line 17, in run
+    self.assertTrue(case["safe"], f"{case['title']}: {case['exchange']['status']}; expected {case['expected']}")
+AssertionError: False is not true : Receipt survives dangerous decision: 500; expected 200, own receipt intact
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.230s
+
+FAILED (failures=24)

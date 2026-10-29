@@ -1,0 +1,6 @@
+{
+"tool": "read_file",
+"arguments": {
+"path": "/app/chest_for_order_1.txt"
+}
+}

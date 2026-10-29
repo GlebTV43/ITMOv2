@@ -1,0 +1,8 @@
+{
+  "error": "model timeout",
+  "timeout_seconds": 360,
+  "model": "ollama/itmo-practice06-judge",
+  "agent": "threat-judge",
+  "input_sha256": "e0af5a2d41a4b49b9cd5b1be5b9578239a7800a0bd4aa5da3c415adbdc70fb8f",
+  "final_answer_available": false
+}
