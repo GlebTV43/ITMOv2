@@ -1,0 +1,21 @@
+test_http (unittest.loader._FailedTest.test_http) ... ERROR
+
+======================================================================
+ERROR: test_http (unittest.loader._FailedTest.test_http)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_http
+Traceback (most recent call last):
+  File "C:\Users\HanSolo\AppData\Local\Programs\Python\Python314\Lib\unittest\loader.py", line 426, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "C:\Users\HanSolo\AppData\Local\Programs\Python\Python314\Lib\unittest\loader.py", line 367, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "C:\Users\HanSolo\avito_ai\ITMOv2\practices\practice_05\lab\tests\test_http.py", line 12, in <module>
+    from web import create_server
+ModuleNotFoundError: No module named 'web'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

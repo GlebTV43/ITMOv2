@@ -1,0 +1,108 @@
+Syntax: PASS
+
+=== Practice 05 HTTP tests ===
+test_absent_unsubscribe_is_normal_idempotent_result (test_http.TestHTTPContract.test_absent_unsubscribe_is_normal_idempotent_result) ... ok
+test_duplicate_does_not_add_another_record (test_http.TestHTTPContract.test_duplicate_does_not_add_another_record) ... ok
+test_eighty_character_name_can_be_unsubscribed (test_http.TestHTTPContract.test_eighty_character_name_can_be_unsubscribed) ... ok
+test_eighty_unicode_characters_are_accepted (test_http.TestHTTPContract.test_eighty_unicode_characters_are_accepted) ... ok
+test_empty_page_has_labelled_form_and_empty_state (test_http.TestHTTPContract.test_empty_page_has_labelled_form_and_empty_state) ... ok
+test_exact_body_limit_is_parsed_then_domain_validated (test_http.TestHTTPContract.test_exact_body_limit_is_parsed_then_domain_validated) ... ok
+test_explicit_utf8_form_charset_is_supported (test_http.TestHTTPContract.test_explicit_utf8_form_charset_is_supported) ... ok
+test_form_roundtrip_subscribe_and_unsubscribe (test_http.TestHTTPContract.test_form_roundtrip_subscribe_and_unsubscribe) ... ok
+test_invalid_content_length_is_rejected (test_http.TestHTTPContract.test_invalid_content_length_is_rejected) ... ok
+test_invalid_input_is_escaped_when_redisplayed (test_http.TestHTTPContract.test_invalid_input_is_escaped_when_redisplayed) ... ok
+test_invalid_names_preserve_state_and_input_on_both_actions (test_http.TestHTTPContract.test_invalid_names_preserve_state_and_input_on_both_actions) ... ok
+test_malformed_form_is_rejected_before_mutation (test_http.TestHTTPContract.test_malformed_form_is_rejected_before_mutation) ... ok
+test_names_are_sorted (test_http.TestHTTPContract.test_names_are_sorted) ... ok
+test_new_server_has_independent_empty_registry (test_http.TestHTTPContract.test_new_server_has_independent_empty_registry) ... ok
+test_oversized_body_returns_413_without_mutation (test_http.TestHTTPContract.test_oversized_body_returns_413_without_mutation) ... ok
+test_padded_eighty_character_name_is_accepted (test_http.TestHTTPContract.test_padded_eighty_character_name_is_accepted) ... ok
+test_refresh_after_redirect_does_not_change_state (test_http.TestHTTPContract.test_refresh_after_redirect_does_not_change_state) ... ok
+test_subscribe_normalises_unicode_and_redirects (test_http.TestHTTPContract.test_subscribe_normalises_unicode_and_redirects) ... ok
+test_ui_does_not_truncate_name_before_server_normalisation (test_http.TestHTTPContract.test_ui_does_not_truncate_name_before_server_normalisation) ... ok
+test_unknown_paths_return_404 (test_http.TestHTTPContract.test_unknown_paths_return_404) ... ok
+test_unknown_result_is_not_reflected_into_html (test_http.TestHTTPContract.test_unknown_result_is_not_reflected_into_html) ... ok
+test_unsubscribe_only_removes_selected_name (test_http.TestHTTPContract.test_unsubscribe_only_removes_selected_name) ... ok
+test_unsupported_charset_returns_415 (test_http.TestHTTPContract.test_unsupported_charset_returns_415) ... ok
+test_unsupported_content_type_returns_415 (test_http.TestHTTPContract.test_unsupported_content_type_returns_415) ... ok
+test_user_markup_is_text_in_names_and_hidden_fields (test_http.TestHTTPContract.test_user_markup_is_text_in_names_and_hidden_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 1.162s
+
+OK
+
+Exit: 0
+
+=== Practice 04 regression ===
+============================================================
+Syntax check
+============================================================
+OK — no syntax errors
+
+============================================================
+Unit tests
+============================================================
+test_subscribe_empty_string_raises_value_error (test_feature_a.TestSubscribeEmptyRejection.test_subscribe_empty_string_raises_value_error) ... ok
+test_subscribe_whitespace_only_raises_value_error (test_feature_a.TestSubscribeEmptyRejection.test_subscribe_whitespace_only_raises_value_error) ... ok
+test_subscribe_80_char_name_returns_true (test_feature_a.TestSubscribeLengthBoundary.test_subscribe_80_char_name_returns_true) ... ok
+test_subscribe_80_unicode_chars_returns_true (test_feature_a.TestSubscribeLengthBoundary.test_subscribe_80_unicode_chars_returns_true) ... ok
+test_subscribe_81_char_name_raises_value_error (test_feature_a.TestSubscribeLengthBoundary.test_subscribe_81_char_name_raises_value_error) ... ok
+test_subscribe_81_unicode_chars_raises_value_error (test_feature_a.TestSubscribeLengthBoundary.test_subscribe_81_unicode_chars_raises_value_error) ... ok
+test_type_error_does_not_mutate_state (test_feature_a.TestSubscribeNoMutationOnTypeError.test_type_error_does_not_mutate_state) ... ok
+test_empty_string_does_not_mutate_state (test_feature_a.TestSubscribeNoMutationOnValueErrorEmpty.test_empty_string_does_not_mutate_state) ... ok
+test_too_long_name_does_not_mutate_state (test_feature_a.TestSubscribeNoMutationOnValueErrorTooLong.test_too_long_name_does_not_mutate_state) ... ok
+test_whitespace_only_does_not_mutate_state (test_feature_a.TestSubscribeNoMutationOnValueErrorWhitespace.test_whitespace_only_does_not_mutate_state) ... ok
+test_subscribe_padded_ann_first_call_returns_true (test_feature_a.TestSubscribeNormalisedDuplicate.test_subscribe_padded_ann_first_call_returns_true) ... ok
+test_subscribe_padded_then_plain_ann_is_duplicate (test_feature_a.TestSubscribeNormalisedDuplicate.test_subscribe_padded_then_plain_ann_is_duplicate) ... ok
+test_subscribe_strips_leading_trailing_whitespace (test_feature_a.TestSubscribeStripsWhitespace.test_subscribe_strips_leading_trailing_whitespace) ... ok
+test_subscribe_with_whitespace_returns_true_when_new (test_feature_a.TestSubscribeStripsWhitespace.test_subscribe_with_whitespace_returns_true_when_new) ... ok
+test_subscribe_integer_raises_type_error (test_feature_a.TestSubscribeTypeRejection.test_subscribe_integer_raises_type_error) ... ok
+test_subscribe_list_raises_type_error (test_feature_a.TestSubscribeTypeRejection.test_subscribe_list_raises_type_error) ... ok
+test_subscribe_none_raises_type_error (test_feature_a.TestSubscribeTypeRejection.test_subscribe_none_raises_type_error) ... ok
+test_array_envelope_returns_invalid_request_error (test_mcp.TestMcpArrayEnvelope.test_array_envelope_returns_invalid_request_error) ... ok
+test_array_arguments_returns_invalid_params_error (test_mcp.TestMcpInvalidArgumentsType.test_array_arguments_returns_invalid_params_error) ... ok
+test_array_params_returns_invalid_request_error (test_mcp.TestMcpInvalidParamsType.test_array_params_returns_invalid_request_error) ... ok
+test_null_params_are_rejected_and_ping_still_works (test_mcp.TestMcpInvalidParamsType.test_null_params_are_rejected_and_ping_still_works) ... ok
+test_malformed_json_returns_parse_error (test_mcp.TestMcpMalformedJson.test_malformed_json_returns_parse_error) ... ok
+test_missing_name_does_not_crash_server (test_mcp.TestMcpMissingName.test_missing_name_does_not_crash_server) ... ok
+test_missing_name_returns_is_error_result (test_mcp.TestMcpMissingName.test_missing_name_returns_is_error_result) ... ok
+test_null_envelope_error_message_is_string (test_mcp.TestMcpNullEnvelope.test_null_envelope_error_message_is_string) ... ok
+test_null_envelope_returns_invalid_request_error (test_mcp.TestMcpNullEnvelope.test_null_envelope_returns_invalid_request_error) ... ok
+test_numeric_name_error_text_mentions_type (test_mcp.TestMcpNumericName.test_numeric_name_error_text_mentions_type) ... ok
+test_numeric_name_returns_is_error_not_internal_error (test_mcp.TestMcpNumericName.test_numeric_name_returns_is_error_not_internal_error) ... ok
+test_scalar_number_envelope_returns_invalid_request_error (test_mcp.TestMcpScalarEnvelope.test_scalar_number_envelope_returns_invalid_request_error) ... ok
+test_ping_result_is_empty_object (test_mcp.TestMcpServerSurvivesInvalidThenPing.test_ping_result_is_empty_object) ... ok
+test_ping_succeeds_after_malformed_json (test_mcp.TestMcpServerSurvivesInvalidThenPing.test_ping_succeeds_after_malformed_json) ... ok
+test_ping_succeeds_after_null_envelope (test_mcp.TestMcpServerSurvivesInvalidThenPing.test_ping_succeeds_after_null_envelope) ... ok
+test_unknown_method_returns_method_not_found (test_mcp.TestMcpUnknownMethod.test_unknown_method_returns_method_not_found) ... ok
+test_unknown_tool_returns_error (test_mcp.TestMcpUnknownTool.test_unknown_tool_returns_error) ... ok
+test_unicode_name_normalized_field_correct (test_mcp.TestMcpValidUnicodeName.test_unicode_name_normalized_field_correct) ... ok
+test_unicode_name_returns_valid_true (test_mcp.TestMcpValidUnicodeName.test_unicode_name_returns_valid_true) ... ok
+test_names_returns_sorted_list (test_registry.TestNamesSnapshot.test_names_returns_sorted_list) ... ok
+test_names_snapshot_is_independent_of_registry (test_registry.TestNamesSnapshot.test_names_snapshot_is_independent_of_registry) ... ok
+test_subscribe_duplicate_returns_false (test_registry.TestSubscribeDuplicate.test_subscribe_duplicate_returns_false) ... ok
+test_subscribe_new_name_returns_true (test_registry.TestSubscribeNew.test_subscribe_new_name_returns_true) ... ok
+test_resubscribe_after_removal_returns_true (test_unsubscribe.TestResubscribeAfterRemoval.test_resubscribe_after_removal_returns_true) ... ok
+test_resubscribed_name_appears_in_names (test_unsubscribe.TestResubscribeAfterRemoval.test_resubscribed_name_appears_in_names) ... ok
+test_repeated_unsubscribe_is_idempotent (test_unsubscribe.TestUnsubscribeAbsent.test_repeated_unsubscribe_is_idempotent) ... ok
+test_unsubscribe_absent_name_returns_false (test_unsubscribe.TestUnsubscribeAbsent.test_unsubscribe_absent_name_returns_false) ... ok
+test_unsubscribe_81_unicode_chars_raises_value_error (test_unsubscribe.TestUnsubscribeBoundaryLengths.test_unsubscribe_81_unicode_chars_raises_value_error) ... ok
+test_unsubscribe_exactly_80_unicode_chars_returns_true (test_unsubscribe.TestUnsubscribeBoundaryLengths.test_unsubscribe_exactly_80_unicode_chars_returns_true) ... ok
+test_unsubscribe_one_name_preserves_another (test_unsubscribe.TestUnsubscribeDoesNotAffectOthers.test_unsubscribe_one_name_preserves_another) ... ok
+test_invalid_unsubscribe_does_not_change_state (test_unsubscribe.TestUnsubscribeInvalidInputDoesNotMutate.test_invalid_unsubscribe_does_not_change_state) ... ok
+test_unsubscribe_empty_string_raises_value_error (test_unsubscribe.TestUnsubscribeInvalidInputs.test_unsubscribe_empty_string_raises_value_error) ... ok
+test_unsubscribe_none_raises_type_error (test_unsubscribe.TestUnsubscribeInvalidInputs.test_unsubscribe_none_raises_type_error) ... ok
+test_unsubscribe_nonstring_raises_type_error (test_unsubscribe.TestUnsubscribeInvalidInputs.test_unsubscribe_nonstring_raises_type_error) ... ok
+test_unsubscribe_whitespace_only_raises_value_error (test_unsubscribe.TestUnsubscribeInvalidInputs.test_unsubscribe_whitespace_only_raises_value_error) ... ok
+test_unsubscribe_existing_name_returns_true (test_unsubscribe.TestUnsubscribePresent.test_unsubscribe_existing_name_returns_true) ... ok
+test_unsubscribe_removes_name_from_registry (test_unsubscribe.TestUnsubscribePresent.test_unsubscribe_removes_name_from_registry) ... ok
+test_unsubscribe_padded_name_leaves_registry_empty (test_unsubscribe.TestUnsubscribeWhitespaceNormalisation.test_unsubscribe_padded_name_leaves_registry_empty) ... ok
+test_unsubscribe_strips_whitespace_before_lookup (test_unsubscribe.TestUnsubscribeWhitespaceNormalisation.test_unsubscribe_strips_whitespace_before_lookup) ... ok
+
+----------------------------------------------------------------------
+Ran 56 tests in 1.449s
+
+OK
+
+Exit: 0
