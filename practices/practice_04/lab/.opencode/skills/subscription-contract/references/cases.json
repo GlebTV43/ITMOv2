@@ -1,0 +1,83 @@
+[
+  {
+    "id": "empty_string",
+    "input": "",
+    "description": "Empty string — rejected as empty after normalisation",
+    "expected_valid": false,
+    "expected_error": "ValueError",
+    "normalised": ""
+  },
+  {
+    "id": "whitespace_only",
+    "input": "   ",
+    "description": "Whitespace-only string — strips to empty, rejected",
+    "expected_valid": false,
+    "expected_error": "ValueError",
+    "normalised": ""
+  },
+  {
+    "id": "nonstring_int",
+    "input": 42,
+    "description": "Integer instead of str — rejected with TypeError",
+    "expected_valid": false,
+    "expected_error": "TypeError",
+    "normalised": null
+  },
+  {
+    "id": "nonstring_none",
+    "input": null,
+    "description": "None instead of str — rejected with TypeError",
+    "expected_valid": false,
+    "expected_error": "TypeError",
+    "normalised": null
+  },
+  {
+    "id": "leading_trailing_whitespace",
+    "input": "  alice  ",
+    "description": "Valid name with surrounding whitespace — normalises to 'alice'",
+    "expected_valid": true,
+    "expected_error": null,
+    "normalised": "alice"
+  },
+  {
+    "id": "plain_valid",
+    "input": "alice",
+    "description": "Plain valid name — accepted as-is",
+    "expected_valid": true,
+    "expected_error": null,
+    "normalised": "alice"
+  },
+  {
+    "id": "exactly_80_chars",
+    "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "description": "Exactly 80 'a' characters — valid (boundary, inclusive)",
+    "expected_valid": true,
+    "expected_error": null,
+    "normalised": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "id": "exactly_81_chars",
+    "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "description": "Exactly 81 'a' characters — invalid (exceeds 80)",
+    "expected_valid": false,
+    "expected_error": "ValueError",
+    "normalised": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "id": "normalisation_deduplication",
+    "input": "  Ann  ",
+    "description": "Subscribe '  Ann  ' then 'Ann' — both normalise to 'Ann'; second is duplicate",
+    "expected_valid": true,
+    "expected_error": null,
+    "normalised": "Ann",
+    "note": "subscribe('  Ann  ') -> True; subscribe('Ann') -> False (duplicate after normalisation)"
+  },
+  {
+    "id": "unicode_name",
+    "input": "Анна",
+    "description": "4-char Unicode name — valid (well within 80 Unicode chars)",
+    "expected_valid": true,
+    "expected_error": null,
+    "normalised": "Анна"
+  }
+]

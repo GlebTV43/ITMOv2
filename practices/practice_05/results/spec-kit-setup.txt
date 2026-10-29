@@ -1,0 +1,23 @@
+             ███████╗██████╗ ███████╗ ██████╗██╗███████╗██╗   ██╗
+             ██╔════╝██╔══██╗██╔════╝██╔════╝██║██╔════╝╚██╗ ██╔╝
+             ███████╗██████╔╝█████╗  ██║     ██║█████╗   ╚████╔╝
+             ╚════██║██╔═══╝ ██╔══╝  ██║     ██║██╔══╝    ╚██╔╝
+             ███████║██║     ███████╗╚██████╗██║██║        ██║
+             ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝
+
+               GitHub Spec Kit - Spec-Driven Development Toolkit
+
+┌────────────────────────── Specify CLI Information ──────────────────────────┐
+│                                                                             │
+│     CLI Version    1.0.6                                                    │
+│                                                                             │
+│          Python    3.14.3                                                   │
+│        Platform    Windows                                                  │
+│    Architecture    AMD64                                                    │
+│      OS Version    10.0.26200                                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+Prerequisites after implementation:
+{"FEATURE_DIR":"C:\\Users\\HanSolo\\avito_ai\\ITMOv2\\practices\\practice_05\\specs\\001-registry-web","AVAILABLE_DOCS":["research.md","data-model.md","contracts/","quickstart.md","tasks.md"]}

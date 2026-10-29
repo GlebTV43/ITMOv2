@@ -1,0 +1,13 @@
+PASS | GET /: пустой список
+PASS | Подписка '  Анна  ': 303 added
+PASS | В Registry хранится нормализованное имя
+PASS | Дубль: 303 duplicate
+PASS | Пустое имя: 400
+PASS | 81 Unicode-символ: 400
+PASS | После ошибок список сохранён
+PASS | 80 Unicode-символов: 303
+PASS | Отписка граничного имени: 303
+PASS | Отписка Анны: 303 removed
+PASS | Повторная отписка: 303 missing
+PASS | Финальный список пуст
+Demo: PASS (12 checks)
