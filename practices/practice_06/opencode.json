@@ -1,0 +1,72 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3.5:4b",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Local Ollama",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1",
+        "apiKey": "ollama"
+      },
+      "models": {
+        "qwen3.5:4b": {
+          "name": "qwen3.5:4b",
+          "tool_call": true,
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          },
+          "options": {
+            "reasoningEffort": "none"
+          }
+        },
+        "itmo-practice06-judge": {
+          "name": "Local threat judge, same Qwen weights, 16K context",
+          "tool_call": true,
+          "limit": {
+            "context": 16384,
+            "output": 2000
+          },
+          "options": {
+            "reasoningEffort": "none"
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "threat-judge": {
+      "description": "Independent evidence-based threat model reviewer",
+      "mode": "primary",
+      "prompt": "{file:./judge-system-prompt.md}",
+      "steps": 8,
+      "permission": {
+        "*": "deny",
+        "read": {
+          "*": "deny"
+        }
+      }
+    },
+    "shop-planner": {
+      "description": "Model under test: shop JSON action, no tools",
+      "mode": "primary",
+      "prompt": "{file:./planner-system.txt}",
+      "permission": {
+        "*": "deny"
+      }
+    },
+    "build": {
+      "mode": "primary",
+      "description": "Working agent; edit only practice_06 files",
+      "prompt": "Рабочая папка уже practices/practice_06. Меняй только явно запрошенные файлы внутри неё. Не меняй sandbox.py, не запускай shell, git, внешние запросы и удаление файлов. Не выводи внутренние рассуждения.",
+      "permission": {
+        "*": "deny",
+        "read": "allow",
+        "edit": "allow",
+        "write": "allow"
+      },
+      "steps": 8
+    }
+  }
+}

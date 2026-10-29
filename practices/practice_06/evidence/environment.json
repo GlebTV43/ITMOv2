@@ -1,0 +1,65 @@
+{
+  "host_python": "3.14.3",
+  "test_runtime": "Ubuntu WSL Python 3.12.3",
+  "opencode": "2.0.18",
+  "ollama_model": "qwen3.5:4b",
+  "model_options": {
+    "reasoningEffort": "none"
+  },
+  "upstream_revision": "0c8a9c1567e334a00502a2d83bd3d9997b2b2687",
+  "fork_base": "798d9a0",
+  "planner_system_sha256": "34f1461714c2789847362a9b7144eae857cf41b6482de5736549654d7787b314",
+  "ollama_version": "0.40.3",
+  "model_metadata": {
+    "name": "qwen3.5:4b",
+    "model": "qwen3.5:4b",
+    "modified_at": "2026-09-25T10:49:42.1973636+03:00",
+    "size": 3389983735,
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "4.7B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  "judge_profile_metadata": {
+    "name": "itmo-practice06-judge:latest",
+    "model": "itmo-practice06-judge:latest",
+    "modified_at": "2026-10-30T02:14:44.8894411+03:00",
+    "size": 3389983472,
+    "digest": "913b65bd547a02e73106287bad13cc82b7e91b1588f24d6f655f950cbfc960c1",
+    "details": {
+      "parent_model": "qwen3.5:4b",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "4.7B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  }
+}

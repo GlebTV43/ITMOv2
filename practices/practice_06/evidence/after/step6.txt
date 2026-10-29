@@ -1,0 +1,2 @@
+Standard library only: ready
+after: 24/24 safe outcomes; evidence: /mnt/c/Users/HanSolo/avito_ai/ITMOv2/practices/practice_06/evidence/after/attacks.json
