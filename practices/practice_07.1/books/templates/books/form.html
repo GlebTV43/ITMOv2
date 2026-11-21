@@ -1,0 +1,19 @@
+{% extends "books/base.html" %}
+{% block title %}{{ heading }} · Дай почитать{% endblock %}
+{% block content %}
+<section class="narrow">
+  <h1>{{ heading }}</h1>
+  {% if description %}<p>{{ description }}</p>{% endif %}
+  {% if needs_book %}
+    <p>Сначала <a href="{% url 'add_book' %}">выставьте книгу</a>, которую готовы предложить.</p>
+  {% else %}
+    <form method="post" {% if upload %}enctype="multipart/form-data"{% endif %}>
+      {% csrf_token %}
+      {{ form.as_p }}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button>{{ submit }}</button>
+    </form>
+  {% endif %}
+  {% if is_login %}<p><a href="{% url 'register' %}">Создать аккаунт или повторно запросить ссылку</a></p>{% endif %}
+</section>
+{% endblock %}
