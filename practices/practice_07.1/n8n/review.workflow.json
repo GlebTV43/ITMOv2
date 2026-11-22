@@ -74,13 +74,55 @@
       "name": "Check review scope"
     },
     {
+      "name": "Ensure review Data Table exists",
+      "id": "3564f306-47d1-41d7-84aa-e33918b27464",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "practice_07_1_reviews",
+        "columns": {
+          "column": [
+            {
+              "name": "pr_id",
+              "type": "string"
+            },
+            {
+              "name": "pr_number",
+              "type": "number"
+            },
+            {
+              "name": "model",
+              "type": "string"
+            },
+            {
+              "name": "head_sha",
+              "type": "string"
+            },
+            {
+              "name": "review_url",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      }
+    },
+    {
       "parameters": {
         "resource": "row",
         "operation": "get",
         "dataTableId": {
           "__rl": true,
-          "mode": "name",
-          "value": "practice_07_1_reviews"
+          "mode": "id",
+          "value": "={{ $('Ensure review Data Table exists').first().json.id }}"
         },
         "limit": 1,
         "filters": {
@@ -88,7 +130,7 @@
             {
               "keyName": "pr_id",
               "condition": "eq",
-              "keyValue": "={{ $json.pr_id }}"
+              "keyValue": "={{ $('Check review scope').first().json.pr_id }}"
             }
           ]
         }
@@ -96,7 +138,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        960,
+        1200,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000005",
@@ -110,7 +152,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
+        1440,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000006",
@@ -144,7 +186,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1440,
+        1680,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000007",
@@ -157,7 +199,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1680,
+        1920,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000008",
@@ -183,7 +225,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1920,
+        2160,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000009",
@@ -196,7 +238,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2160,
+        2400,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000010",
@@ -214,7 +256,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2400,
+        2640,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000011",
@@ -227,7 +269,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2640,
+        2880,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000012",
@@ -249,7 +291,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2880,
+        3120,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000013",
@@ -262,7 +304,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3120,
+        3360,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000014",
@@ -274,8 +316,8 @@
         "operation": "upsert",
         "dataTableId": {
           "__rl": true,
-          "mode": "name",
-          "value": "practice_07_1_reviews"
+          "mode": "id",
+          "value": "={{ $('Ensure review Data Table exists').first().json.id }}"
         },
         "filters": {
           "conditions": [
@@ -351,7 +393,7 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        3360,
+        3600,
         0
       ],
       "id": "00000000-0710-4000-8000-000000000015",
@@ -396,7 +438,7 @@
       "main": [
         [
           {
-            "node": "Find PR in Data Table",
+            "node": "Ensure review Data Table exists",
             "type": "main",
             "index": 0
           }
@@ -507,6 +549,17 @@
         [
           {
             "node": "Save reviewed PR in Data Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure review Data Table exists": {
+      "main": [
+        [
+          {
+            "node": "Find PR in Data Table",
             "type": "main",
             "index": 0
           }
