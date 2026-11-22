@@ -30,10 +30,10 @@ function comment(body, association = 'OWNER') {
 
 test('only opened PRs and exact commands trigger the intended model', () => {
   const select = event => run('Choose review model', [event]);
-  assert.equal(select(open)[0].json.model, 'qwen3.5:4b');
+  assert.equal(select(open)[0].json.model, 'openai/gpt-5');
   assert.deepEqual(select({ ...open, body: { ...open.body, action: 'synchronize' } }), []);
   assert.equal(select(comment('/make_ai_review'))[0].json.mode, 'main');
-  assert.equal(select(comment('/make_other_ai_review'))[0].json.model, 'gemma4:12b');
+  assert.equal(select(comment('/make_other_ai_review'))[0].json.model, 'anthropic/claude-sonnet-4');
   assert.deepEqual(select(comment('/make_other_ai_review please')), []);
   assert.deepEqual(select(comment('/make_ai_review', 'NONE')), []);
 });
@@ -59,7 +59,8 @@ test('each textual hunk gets an anchor on the correct side', () => {
   assert.throws(() => run('Split diff into hunks', [{ body: [{ ...completePatch, deletions: 3 }] }], scope),
     /omitted textual changes/);
   const review = run('Build inline GitHub review', [
-    { message: { content: 'Проверено @team' } }, { message: { content: 'Удаление проверено' } },
+    { choices: [{ message: { content: 'Проверено @team' } }] },
+    { choices: [{ message: { content: 'Удаление проверено' } }] },
   ], { ...scope, 'Split diff into hunks': anchors })[0].json.review;
   assert.equal(review.event, 'COMMENT');
   assert.equal(review.comments.length, 2);
