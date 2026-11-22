@@ -37,18 +37,22 @@ function setupFixtures() {
 }
 return [{json:{ok:true}}];`, 780);
   const read = w.http('Прочитать уже созданные тестовые Issues', {...GitHub,...githubHeaders,
-    url:API+'/issues?state=all&labels=practice-7.2&per_page=100',
+    url:API+'/issues?state=all&creator=GlebTV43&per_page=100',
     options:{timeout:20000,response:{response:{fullResponse:true,responseFormat:'json'}}}}, 1040);
   const choose = w.code('Создать только отсутствующие Issues', `const answer=$input.first().json;
 if (!Array.isArray(answer.body) || answer.headers?.link?.includes('rel="next"')) {
   throw new Error('Не удалось сверить список тестовых Issues.');
 }
-const existing = new Set(answer.body.map(row=>row.title));
+const existing = new Set(answer.body.filter(row=>!row.pull_request).map(row=>row.title));
 return ${JSON.stringify(fixtures)}.filter(x=>!existing.has(x.title)).map(json=>({json}));`, 1300);
   const create = w.http('Открыть тестовые Issues',{...GitHub,...githubHeaders,method:'POST',url:API+'/issues',
     sendBody:true,specifyBody:'json',jsonBody:body('$json')},1560);
-  const report = w.code('Показать номера тестовых Issues', `return $input.all().map(({json:{number,title,html_url}})=>
-  ({json:{number,title,url:html_url}}));`,1820);
+  const report = w.code('Показать номера тестовых Issues', `return $input.all().map(({json:issue})=>{
+  const requested = ${JSON.stringify(Object.fromEntries(fixtures.map(issue => [issue.title, issue.labels])))};
+  const applied = new Set(issue.labels?.map(label=>label.name));
+  return {json:{number:issue.number,title:issue.title,url:issue.html_url,
+    missingLabels:requested[issue.title].filter(label=>!applied.has(label))}};
+});`,1820);
   w.chain(start,configuration,labels,verified,read,choose,create,report);
   return w.result;
 }

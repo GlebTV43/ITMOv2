@@ -21,12 +21,11 @@ return [{json:{weekEnding}}];`, 260, 240);
 const time = $now.setZone('Europe/Moscow');
 const override = $input.first().json.weekEnding;
 const parts = typeof override === 'string' ? override.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/) : null;
-const date = parts ? time.set({year:Number(parts[1]),month:Number(parts[2]),day:Number(parts[3])}) : time.startOf('week');
-if (override && (!parts || date.toISODate() !== override)) throw new Error('Неверная дата окончания недели.');
-if (!date.isValid || date.weekday !== 1 || date > time.startOf('week').plus({weeks:1})) {
+const end = parts ? time.set({year:Number(parts[1]),month:Number(parts[2]),day:Number(parts[3])}).startOf('day') : time.startOf('week');
+if (override && (!parts || end.toISODate() !== override)) throw new Error('Неверная дата окончания недели.');
+if (!end.isValid || end.weekday !== 1 || end > time.startOf('week').plus({weeks:1})) {
   throw new Error('Укажите дату понедельника в формате YYYY-MM-DD.');
 }
-const end = date.startOf('day');
 const start = end.minus({weeks:1});
 const lastSecond = end.minus({seconds:1});
 const urls = Object.fromEntries(definitions.map(([key, , qualifier, dateField]) => {
