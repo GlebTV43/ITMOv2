@@ -1,0 +1,977 @@
+{
+  "id": "practice072Triage",
+  "name": "7.2 · Разметка обращений «Дай почитать»",
+  "nodes": [
+    {
+      "id": "09b12c44-647b-1e90-eb65-8d88a2e60482",
+      "name": "GitHub · открыто новое Issue",
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "mode": "list",
+          "value": "GlebTV43"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": "ITMOv2"
+        },
+        "events": [
+          "issues"
+        ],
+        "options": {}
+      },
+      "webhookId": "9942e602-d9c3-b858-9d4d-75d3a27c5513"
+    },
+    {
+      "id": "32d264e9-c112-bc9a-cb00-49880df2eba1",
+      "name": "Вручную · локальная проверка",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        260
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "c2489d2f-f043-84ae-1f66-eb70f5afcb2f",
+      "name": "Номер тестового Issue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        260
+      ],
+      "parameters": {
+        "jsCode": "const number = 0; // Для локального запуска укажите номер Issue.\nif (!Number.isSafeInteger(number) || number < 1) throw new Error('Укажите номер тестового Issue.');\nreturn [{json:{number}}];"
+      }
+    },
+    {
+      "id": "99b4f7d1-c25d-a91a-14b8-97d210eef6fc",
+      "name": "Прочитать тестовое Issue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        260
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "url": "={{ 'https://api.github.com/repos/GlebTV43/ITMOv2/issues/' + $json.number }}"
+      }
+    },
+    {
+      "id": "9b400308-da7d-f403-5a5d-3b66046d9e90",
+      "name": "Проверить событие Issue opened",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst event = input.body && typeof input.body === 'object' ? input.body : null;\nif (event && (input.headers?.['x-github-event'] !== 'issues' || event.action !== 'opened' ||\n    event.repository?.full_name?.toLowerCase() !== 'glebtv43/itmov2')) return [];\nconst issue = event ? event.issue : input;\nif (!issue || issue.pull_request || issue.state !== 'open' || typeof issue.id !== 'number' ||\n    !Number.isSafeInteger(issue.number) || !issue.title?.startsWith('[7.2] ')) return [];\nreturn [{json:{issue_id:String(issue.id), issue_number:issue.number, title:issue.title.slice(6),\n  body:typeof issue.body === 'string' ? issue.body : '', author:issue.user?.login ?? '',\n  first_contributor:issue.author_association === 'NONE', created_at:issue.created_at,\n  autofix_requested:issue.user?.login?.toLowerCase() === 'glebtv43' &&\n    (issue.labels || []).some(label => label.name === 'ai-autofix')}}];"
+      }
+    },
+    {
+      "id": "d0611394-838b-29f5-a515-d0e8bd727be3",
+      "name": "Создать таблицу обработанных Issues",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ],
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "practice_07_2_processed_issues",
+        "columns": {
+          "column": [
+            {
+              "name": "issue_id",
+              "type": "string"
+            },
+            {
+              "name": "issue_number",
+              "type": "number"
+            },
+            {
+              "name": "author",
+              "type": "string"
+            },
+            {
+              "name": "github_created_at",
+              "type": "string"
+            },
+            {
+              "name": "type",
+              "type": "string"
+            },
+            {
+              "name": "confidence",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      }
+    },
+    {
+      "id": "ecccea4b-d729-beea-2d1b-be04550adee7",
+      "name": "Искать ID Issue в таблице",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Создать таблицу обработанных Issues').first().json.id }}"
+        },
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "issue_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Проверить событие Issue opened').first().json.issue_id }}"
+            }
+          ]
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "5f4de902-206d-9a56-3523-c97eaff74210",
+      "name": "Пропустить уже обработанное Issue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const original = $('Проверить событие Issue opened').first().json;\nreturn $input.first().json.issue_id === original.issue_id ? [] : [{json:original}];"
+      }
+    },
+    {
+      "id": "4e73098e-e469-6df1-3c40-17f953ae14d8",
+      "name": "Вызвать классификатор",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1820,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "practice072Classify"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "title": "={{ $json.title }}",
+            "body": "={{ $json.body }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "display": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "cd1631fb-391c-c385-0e21-e5cd5aa7ec09",
+      "name": "Эскалировать при confidence ниже 0.8",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const reply = $input.first().json;\nconst original = $('Проверить событие Issue opened').first().json;\nconst confidence = typeof reply.confidence === 'number' && reply.confidence >= 0 && reply.confidence <= 1 ? reply.confidence : 0;\nconst type = confidence >= 0.8 && ['bug','task','feature'].includes(reply.type) ? reply.type : 'unknown';\nreturn [{json:{...original,type,confidence}}];"
+      }
+    },
+    {
+      "id": "e8b42a25-3780-b7ac-3be5-af4d0d7f0be3",
+      "name": "Развести bug, task, feature и unknown",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2340,
+        0
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "e4c584e0-3341-3ca7-f825-f6d36b3ea1b5",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "bug",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "bug"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "fc36b739-7b04-3180-b496-87f6ba650ea6",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "task",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "task"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "2cf2e3f1-aa60-f40a-2834-8b99275da6de",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "feature",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "feature"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "56e511ad-95b5-7791-e27b-d2a925fc41b2",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "unknown",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "unknown"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5448a9dc-6c28-cba9-4ba2-10f2e192f395",
+      "name": "Проставить лейблы в GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2860,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "method": "POST",
+        "url": "={{ 'https://api.github.com/repos/GlebTV43/ITMOv2/issues/' + $json.issue_number + '/labels' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ labels: $json.labels }) }}"
+      }
+    },
+    {
+      "id": "85cd0e2c-fd66-1954-b62f-2848ec05cbc6",
+      "name": "Подготовить bug",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        -232.5
+      ],
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst labels = ['practice-7.2', \"bug\"];\nif (data.first_contributor) labels.push('first-time-contributor');\nreturn [{json:{...data,labels}}];"
+      }
+    },
+    {
+      "id": "ba81987a-acfa-ddca-1cc1-ddc6a8b74f6b",
+      "name": "Подготовить task",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        -77.5
+      ],
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst labels = ['practice-7.2', \"task\"];\nif (data.first_contributor) labels.push('first-time-contributor');\nreturn [{json:{...data,labels}}];"
+      }
+    },
+    {
+      "id": "c0c84dd3-84f7-6241-4ede-864015f69dd3",
+      "name": "Подготовить feature-request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        77.5
+      ],
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst labels = ['practice-7.2', \"feature-request\"];\nif (data.first_contributor) labels.push('first-time-contributor');\nreturn [{json:{...data,labels}}];"
+      }
+    },
+    {
+      "id": "39f5c59a-3d52-30bc-89d8-f9edc3c08e43",
+      "name": "Подготовить needs-triage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        232.5
+      ],
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst labels = ['practice-7.2', \"needs-triage\"];\nif (data.first_contributor) labels.push('first-time-contributor');\nreturn [{json:{...data,labels}}];"
+      }
+    },
+    {
+      "id": "1eed3f07-407e-cea6-9449-01eeb5eeb78d",
+      "name": "Подготовить ответ по типу",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const issues = $('Эскалировать при confidence ниже 0.8').first().json;\nconst plans = {\"bug\":\"Записали ошибку. Для проверки пригодятся шаги воспроизведения и ожидаемый результат.\",\"task\":\"Приняли обращение. Опишем результат в этой задаче.\",\"feature\":\"Спасибо за предложение. Пометили его как запрос новой возможности.\",\"unknown\":\"\"};\nlet response = plans[issues.type];\nif (response && issues.first_contributor) response += '\\n\\nДобро пожаловать! Правила участия: https://github.com/GlebTV43/ITMOv2/blob/7.2/practices/practice_07.2/n8n/CONTRIBUTING.md';\nreturn [{json:{...issues,response}}];"
+      }
+    },
+    {
+      "id": "ac214ccb-2b0a-0b8c-9941-e72844112ba7",
+      "name": "Есть ответ для публикации?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3380,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d3d34829-9857-1cbc-0425-cfdb0f30a437",
+              "leftValue": "={{ Boolean($json.response) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9db8b515-6dc5-f498-106f-b486c7d88fef",
+      "name": "Опубликовать ответ",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3640,
+        -140
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "method": "POST",
+        "url": "={{ 'https://api.github.com/repos/GlebTV43/ITMOv2/issues/' + $json.issue_number + '/comments' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ body: $json.response }) }}"
+      }
+    },
+    {
+      "id": "f7a953e9-7820-9ae4-19af-3976d6bfcec9",
+      "name": "Подготовить запись обработки",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3900,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const issue = $('Эскалировать при confidence ниже 0.8').first().json;\nreturn [{json:{issue_id:issue.issue_id,issue_number:issue.issue_number,author:issue.author,\ngithub_created_at:issue.created_at,type:issue.type,confidence:issue.confidence}}];"
+      }
+    },
+    {
+      "id": "44f3611b-426b-8067-cc88-b26ede5602c9",
+      "name": "Сохранить обработанное Issue",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4160,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Создать таблицу обработанных Issues').first().json.id }}"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "issue_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.issue_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "issue_id": "={{ $json.issue_id }}",
+            "issue_number": "={{ $json.issue_number }}",
+            "author": "={{ $json.author }}",
+            "github_created_at": "={{ $json.github_created_at }}",
+            "type": "={{ $json.type }}",
+            "confidence": "={{ $json.confidence }}"
+          },
+          "schema": [
+            {
+              "id": "issue_id",
+              "displayName": "issue_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "issue_number",
+              "displayName": "issue_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "author",
+              "displayName": "author",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "github_created_at",
+              "displayName": "github_created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "bcc5d090-02a3-b85a-080b-c062001132b8",
+      "name": "Передать только согласованный баг",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4420,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const issue = $('Эскалировать при confidence ниже 0.8').first().json;\nif (issue.type !== 'bug' || !issue.autofix_requested) return [];\nreturn [{json:{issue_number:issue.issue_number}}];"
+      }
+    },
+    {
+      "id": "f2aa61fd-38bc-1ab2-212a-6e7a3b010894",
+      "name": "Запустить автоисправление",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        4680,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "practice072Autofix"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "issue_number": "={{ $json.issue_number }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "issue_number",
+              "displayName": "issue_number",
+              "required": false,
+              "display": true,
+              "type": "number"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Развести bug, task, feature и unknown": {
+      "main": [
+        [
+          {
+            "node": "Подготовить bug",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Подготовить task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Подготовить feature-request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Подготовить needs-triage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить bug": {
+      "main": [
+        [
+          {
+            "node": "Проставить лейблы в GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить task": {
+      "main": [
+        [
+          {
+            "node": "Проставить лейблы в GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить feature-request": {
+      "main": [
+        [
+          {
+            "node": "Проставить лейблы в GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить needs-triage": {
+      "main": [
+        [
+          {
+            "node": "Проставить лейблы в GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сохранить обработанное Issue": {
+      "main": [
+        [
+          {
+            "node": "Передать только согласованный баг",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Передать только согласованный баг": {
+      "main": [
+        [
+          {
+            "node": "Запустить автоисправление",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub · открыто новое Issue": {
+      "main": [
+        [
+          {
+            "node": "Проверить событие Issue opened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Вручную · локальная проверка": {
+      "main": [
+        [
+          {
+            "node": "Номер тестового Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Номер тестового Issue": {
+      "main": [
+        [
+          {
+            "node": "Прочитать тестовое Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Прочитать тестовое Issue": {
+      "main": [
+        [
+          {
+            "node": "Проверить событие Issue opened",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Проверить событие Issue opened": {
+      "main": [
+        [
+          {
+            "node": "Создать таблицу обработанных Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Создать таблицу обработанных Issues": {
+      "main": [
+        [
+          {
+            "node": "Искать ID Issue в таблице",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Искать ID Issue в таблице": {
+      "main": [
+        [
+          {
+            "node": "Пропустить уже обработанное Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Пропустить уже обработанное Issue": {
+      "main": [
+        [
+          {
+            "node": "Вызвать классификатор",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Вызвать классификатор": {
+      "main": [
+        [
+          {
+            "node": "Эскалировать при confidence ниже 0.8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Эскалировать при confidence ниже 0.8": {
+      "main": [
+        [
+          {
+            "node": "Развести bug, task, feature и unknown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Проставить лейблы в GitHub": {
+      "main": [
+        [
+          {
+            "node": "Подготовить ответ по типу",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить ответ по типу": {
+      "main": [
+        [
+          {
+            "node": "Есть ответ для публикации?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Есть ответ для публикации?": {
+      "main": [
+        [
+          {
+            "node": "Опубликовать ответ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Подготовить запись обработки",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Опубликовать ответ": {
+      "main": [
+        [
+          {
+            "node": "Подготовить запись обработки",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить запись обработки": {
+      "main": [
+        [
+          {
+            "node": "Сохранить обработанное Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all"
+  },
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,297 @@
+{
+  "id": "practice072SeedWeek",
+  "name": "7.2 · Тестовые данные прошлой недели",
+  "nodes": [
+    {
+      "id": "34a2bd9a-a713-adef-ac2a-da3687b2aa65",
+      "name": "Вручную · добавить пример",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "290be273-26dd-bdb2-2a32-eac6882c15ee",
+      "name": "Сформировать тестовую неделю",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const comparisonWeekEnding = ''; // Та же дата понедельника, что в демонстрации отчёта.\nconst today = $now.setZone('Europe/Moscow').startOf('week');\nconst parts = comparisonWeekEnding.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);\nconst comparisonEnd = parts ? today.set({year:Number(parts[1]),month:Number(parts[2]),day:Number(parts[3])}) : today;\nif (!comparisonEnd.isValid || comparisonEnd.weekday !== 1 || (comparisonWeekEnding && comparisonEnd.toISODate() !== comparisonWeekEnding)) {\n  throw new Error('Ожидается дата понедельника в формате YYYY-MM-DD.');\n}\nconst end = comparisonEnd.minus({weeks:1});\nreturn [{json:{week_end:end.toISODate(),week_start:end.minus({weeks:1}).toISODate(),\n  counts_json:JSON.stringify({issues_opened:3,issues_closed:1,prs_opened:1,prs_merged:1}),\n  types_json:JSON.stringify({bug:1,task:1,feature:1,unknown:0,other:0}),\n  authors_json:JSON.stringify({'example-user':{issues_opened:3,issues_closed:1,prs_opened:1,prs_merged:1}}),\n  gmail_message_id:'',source:'fixture'}}];"
+      }
+    },
+    {
+      "id": "9d598904-84a5-3799-5dfa-c117002eda46",
+      "name": "Открыть таблицу отчётов",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "practice_07_2_weekly_stats",
+        "columns": {
+          "column": [
+            {
+              "name": "week_end",
+              "type": "string"
+            },
+            {
+              "name": "week_start",
+              "type": "string"
+            },
+            {
+              "name": "counts_json",
+              "type": "string"
+            },
+            {
+              "name": "types_json",
+              "type": "string"
+            },
+            {
+              "name": "authors_json",
+              "type": "string"
+            },
+            {
+              "name": "gmail_message_id",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      }
+    },
+    {
+      "id": "c04507e8-971e-e0c0-9b1e-d29cf479fbdd",
+      "name": "Проверить существующую запись",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Открыть таблицу отчётов').first().json.id }}"
+        },
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_end",
+              "condition": "eq",
+              "keyValue": "={{ $('Сформировать тестовую неделю').first().json.week_end }}"
+            }
+          ]
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "626f1a36-f542-47dd-593f-0dfac2ca99d3",
+      "name": "Сохранить только отсутствующую неделю",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const sample = $('Сформировать тестовую неделю').first().json;\nreturn $input.first().json.week_end === sample.week_end ? [] : [{json:sample}];"
+      }
+    },
+    {
+      "id": "6de34654-67ad-1954-8e62-a732a6569de5",
+      "name": "Сохранить запись с источником fixture",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Открыть таблицу отчётов').first().json.id }}"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_end",
+              "condition": "eq",
+              "keyValue": "={{ $json.week_end }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "week_end": "={{ $json.week_end }}",
+            "week_start": "={{ $json.week_start }}",
+            "counts_json": "={{ $json.counts_json }}",
+            "types_json": "={{ $json.types_json }}",
+            "authors_json": "={{ $json.authors_json }}",
+            "gmail_message_id": "={{ $json.gmail_message_id }}",
+            "source": "={{ $json.source }}"
+          },
+          "schema": [
+            {
+              "id": "week_end",
+              "displayName": "week_end",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "week_start",
+              "displayName": "week_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "counts_json",
+              "displayName": "counts_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "types_json",
+              "displayName": "types_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "authors_json",
+              "displayName": "authors_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gmail_message_id",
+              "displayName": "gmail_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Вручную · добавить пример": {
+      "main": [
+        [
+          {
+            "node": "Сформировать тестовую неделю",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сформировать тестовую неделю": {
+      "main": [
+        [
+          {
+            "node": "Открыть таблицу отчётов",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Открыть таблицу отчётов": {
+      "main": [
+        [
+          {
+            "node": "Проверить существующую запись",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Проверить существующую запись": {
+      "main": [
+        [
+          {
+            "node": "Сохранить только отсутствующую неделю",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сохранить только отсутствующую неделю": {
+      "main": [
+        [
+          {
+            "node": "Сохранить запись с источником fixture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "timezone": "Europe/Moscow"
+  },
+  "pinData": {},
+  "tags": []
+}
