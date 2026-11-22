@@ -1,0 +1,25 @@
+{% extends "books/base.html" %}
+{% block title %}{{ book.title }} · Дай почитать{% endblock %}
+{% block content %}
+<article class="book-detail">
+  <img src="{{ book.photo.url }}" alt="Фото состояния книги «{{ book.title }}»">
+  <div>
+    <h1>{{ book.title }}</h1>
+    <p>{{ book.author }}</p>
+    <p>Владелец <a href="{% url 'profile' book.owner_id %}">{{ book.owner.first_name|default:"Читатель" }}</a></p>
+    <p class="notice">{{ book.get_status_display }}</p>
+    <h2>Описание и состояние</h2>
+    <p>{{ book.description|linebreaksbr }}</p>
+    <h2>На что обменяет</h2>
+    <p>{{ book.wanted|linebreaksbr }}</p>
+    {% if book.status == 'available' and user.pk != book.owner_id %}
+      <a class="button" href="{% url 'propose' book.pk %}">Предложить обмен</a>
+    {% endif %}
+  </div>
+</article>
+<h2>Другие варианты</h2>
+<div class="cards">
+  {% for option in related %}{% include "books/card.html" with book=option %}
+  {% empty %}<p>Других вариантов пока нет.</p>{% endfor %}
+</div>
+{% endblock %}

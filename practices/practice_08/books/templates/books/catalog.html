@@ -1,0 +1,24 @@
+{% extends "books/base.html" %}
+{% block content %}
+<section class="intro">
+  <h1>Прочитал? Дай почитать другим.</h1>
+  <p>Дай книжке новую жизнь. Найди следующую историю и передай свою дальше.</p>
+</section>
+<form method="get" class="search">
+  <label>Что ищешь <input name="q" value="{{ search }}" maxlength="180" placeholder="Название или автор"></label>
+  <label>Что готов отдать <input name="offer" value="{{ offer }}" maxlength="180" placeholder="Название или автор из пожеланий"></label>
+  <button>Найти книги</button>
+</form>
+<h2>Книги к обмену</h2>
+<div class="cards">
+  {% for book in page %}{% include "books/card.html" %}
+  {% empty %}<p>Книг по этому запросу пока нет.</p>{% endfor %}
+</div>
+{% if page.has_other_pages %}
+<nav class="pagination" aria-label="Страницы каталога">
+  {% if page.has_previous %}<a href="{% querystring page=page.previous_page_number %}">Назад</a>{% endif %}
+  <span>Страница {{ page.number }} из {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a href="{% querystring page=page.next_page_number %}">Дальше</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

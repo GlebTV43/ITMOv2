@@ -1,0 +1,10 @@
+{% extends "books/base.html" %}
+{% block content %}
+<h1>Мои обмены</h1>
+<ul class="rows">
+  {% for item in exchanges %}
+    <li><a href="{% url 'exchange' item.pk %}">{{ item.offered.title }} ↔ {{ item.requested.title }}</a>
+      <span>{{ item.get_status_display }}</span></li>
+  {% empty %}<li>Предложений пока нет.</li>{% endfor %}
+</ul>
+{% endblock %}
