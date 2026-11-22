@@ -33,7 +33,7 @@ test('only opened PRs and exact commands trigger the intended model', () => {
   assert.equal(select(open)[0].json.model, 'openai/gpt-5');
   assert.deepEqual(select({ ...open, body: { ...open.body, action: 'synchronize' } }), []);
   assert.equal(select(comment('/make_ai_review'))[0].json.mode, 'main');
-  assert.equal(select(comment('/make_other_ai_review'))[0].json.model, 'anthropic/claude-sonnet-4');
+  assert.equal(select(comment('/make_other_ai_review'))[0].json.model, 'anthropic/claude-sonnet-4.5');
   assert.deepEqual(select(comment('/make_other_ai_review please')), []);
   assert.deepEqual(select(comment('/make_ai_review', 'NONE')), []);
 });
