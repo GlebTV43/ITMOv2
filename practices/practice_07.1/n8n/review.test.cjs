@@ -92,3 +92,10 @@ test('local polling processes actual PR creation and command records only once',
   assert.equal(tick()[0].json.event_key, 'comment:130');
   assert.deepEqual(tick(), []);
 });
+test('an incomplete model response is never published as an inline review', () => {
+  const anchors = run('Split diff into hunks', [{ body: [completePatch] }], scope).map(v => v.json);
+  assert.throws(() => run('Build inline GitHub review', [
+    { choices: [{ finish_reason: 'length', message: { content: 'Начало ответа' } }] },
+    { choices: [{ finish_reason: 'stop', message: { content: 'Проверено' } }] },
+  ], { ...scope, 'Split diff into hunks': anchors }), /Model response was truncated/);
+});
