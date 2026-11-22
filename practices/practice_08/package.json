@@ -1,0 +1,10 @@
+{
+  "name": "dai-pochitat-practice-8",
+  "private": true,
+  "scripts": {
+    "postinstall": "node scripts/copy-bootstrap.cjs",
+    "test": "playwright test"
+  },
+  "dependencies": {"bootstrap": "5.3.8"},
+  "devDependencies": {"@playwright/test": "1.58.2"}
+}

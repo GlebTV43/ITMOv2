@@ -3,7 +3,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Case, IntegerField, Q, Value, When
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST, require_http_methods
 
 from . import exchanges
@@ -77,10 +79,12 @@ def add_read_book(request):
 @require_http_methods(["GET", "POST"])
 def propose(request, pk):
     book = get_object_or_404(Book.objects.exclude(owner=request.user), pk=pk)
+    enhanced = request.method == "POST" and request.headers.get("X-Bookshare-Form") == "offer"
     form = OfferForm(request.POST if request.method == "POST" else None, owner=request.user)
     if book.status != Book.Status.AVAILABLE:
         messages.error(request, "Книга уже недоступна для новых предложений.")
-        return redirect("book", pk=pk)
+        target = reverse("book", kwargs={"pk": pk})
+        return JsonResponse({"redirect": target}) if enhanced else redirect(target)
     if request.method == "POST" and form.is_valid():
         try:
             exchange = exchanges.propose(
@@ -89,11 +93,13 @@ def propose(request, pk):
         except exchanges.ExchangeError as error:
             form.add_error(None, str(error))
         else:
-            return redirect("exchange", pk=exchange.pk)
-    return render(request, "books/form.html", {
-        "form": form, "heading": f"Предложить обмен на «{book.title}»", "submit": "Отправить",
+            messages.success(request, "Предложение отправлено. Дождитесь ответа владельца.")
+            target = reverse("exchange", kwargs={"pk": exchange.pk})
+            return JsonResponse({"redirect": target}) if enhanced else redirect(target)
+    return render(request, "books/offer.html", {
+        "form": form, "book": book,
         "needs_book": not form.fields["offered"].queryset.exists(),
-    })
+    }, status=422 if enhanced else 200)
 
 
 @login_required

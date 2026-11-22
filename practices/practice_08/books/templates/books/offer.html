@@ -1,0 +1,40 @@
+{% extends "books/base.html" %}
+{% block title %}Предложить обмен · Дай почитать{% endblock %}
+{% block content %}
+<nav class="crumbs" aria-label="Путь к странице"><a href="{% url 'catalog' %}">Каталог</a><span aria-hidden="true">/</span><a href="{% url 'book' book.pk %}">{{ book.title }}</a><span aria-hidden="true">/</span><span>Предложение</span></nav>
+<div class="offer-layout">
+  <section class="card offer-panel" data-offer-panel aria-labelledby="offer-heading">
+    <h1 id="offer-heading">Предложить обмен</h1>
+    <p class="panel-intro">Выбери свою книгу и напиши владельцу.</p>
+    {% if needs_book %}
+      <div class="alert alert-info">У тебя пока нет доступных книг для обмена.</div>
+      <div><a class="btn btn-primary" href="{% url 'add_book' %}">Выставить книгу</a></div>
+    {% else %}
+      <form method="post" action="{% url 'propose' book.pk %}" data-offer-form novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger" role="alert" tabindex="-1">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="alert alert-danger" data-network-error role="alert" tabindex="-1" hidden>Не удалось отправить предложение. Проверь соединение и попробуй ещё раз.</div>
+        {% for field in form.visible_fields %}
+          <div class="offer-field">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+        <div class="offer-actions">
+          <button class="btn btn-primary" type="submit">
+            <span class="spinner-border spinner-border-sm" data-offer-spinner aria-hidden="true" hidden></span>
+            <span data-offer-label>Отправить предложение</span>
+          </button>
+          <a class="btn btn-outline-primary" href="{% url 'book' book.pk %}">Назад к книге</a>
+        </div>
+      </form>
+      <p class="visually-hidden" role="status" aria-live="polite" data-offer-status></p>
+    {% endif %}
+  </section>
+  <aside class="card offer-book" aria-label="Книга, которую хочешь получить">
+    <img class="card-img-top" src="{{ book.photo.url }}" alt="">
+    <div class="card-body"><h2>{{ book.title }}</h2><p>{{ book.author }}</p><p>Владелец · {{ book.owner.first_name|default:"Читатель" }}</p></div>
+  </aside>
+</div>
+{% endblock %}

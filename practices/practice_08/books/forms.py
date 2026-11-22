@@ -69,9 +69,16 @@ class MessageForm(forms.ModelForm):
 
 
 class OfferForm(forms.Form):
-    offered = forms.ModelChoiceField(label="Какую книгу предлагаете", queryset=Book.objects.none())
-    text = forms.CharField(label="Сообщение владельцу", max_length=2000,
-                           widget=forms.Textarea(attrs={"rows": 3}))
+    offered = forms.ModelChoiceField(
+        label="Какую книгу предлагаете", queryset=Book.objects.none(), empty_label="Выберите книгу",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    text = forms.CharField(
+        label="Сообщение владельцу", max_length=2000,
+        widget=forms.Textarea(attrs={
+            "class": "form-control", "rows": 4, "placeholder": "Напишите, в каком состоянии ваша книга",
+        }),
+    )
 
     def __init__(self, *args, owner, **kwargs):
         super().__init__(*args, **kwargs)

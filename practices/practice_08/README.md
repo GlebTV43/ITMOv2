@@ -1,5 +1,34 @@
 # Практика 8: добавляем фронтенд к своему проекту с помощью AI
 
+## «Дай почитать» · запуск и материалы
+
+Интерфейс использует Django Templates и Bootstrap 5.3.8. Для локального запуска нужны Python и Node.js. В PowerShell из папки `practices/practice_08` выполните:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+npm ci
+.\.venv\Scripts\python.exe -m browser_tests.server 127.0.0.1:8008
+```
+
+Откройте [локальный каталог](http://127.0.0.1:8008/). Демосервер создаёт отдельную базу с тестовыми книгами и аккаунтами. Чтобы остановить сервер, нажмите Ctrl+C в PowerShell.
+
+Для тестов откройте второй PowerShell в той же папке:
+
+```powershell
+$env:BOOKSHARE_BROWSER_PYTHON = (Resolve-Path .\.venv\Scripts\python.exe).Path
+npx playwright install chromium
+npm test
+.\.venv\Scripts\python.exe manage.py test
+```
+
+- [Сценарий обмена и тестовые аккаунты](PROJECT.md)
+- [Интерактивный HTML-макет](design/prototype.html)
+- [Проверка по критериям и скриншоты](design/verification.md)
+- [Как использовали AI](design/ai.md)
+
+## Условие курса
+
 После лекции самостоятельно спроектируйте и реализуйте интерфейс своего проекта с помощью AI-инструментов: создайте макет или прототип, выберите библиотеку компонентов, подключите фронтенд к существующей логике проекта и проверьте пользовательский сценарий.
 
 ## Самостоятельная работа после лекции: интерфейс своего проекта
