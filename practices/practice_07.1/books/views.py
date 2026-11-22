@@ -27,7 +27,7 @@ def book_detail(request, pk):
     book = get_object_or_404(Book.objects.select_related("owner"), pk=pk)
     related = Book.objects.filter(status=Book.Status.AVAILABLE).exclude(pk=book.pk)
     related = related.annotate(priority=Case(
-        When(search_text=book.search_text, then=Value(0)),
+        When(search_text__startswith=book.title.casefold() + "\n", then=Value(0)),
         When(search_text__contains=book.author.casefold(), then=Value(1)),
         default=Value(2), output_field=IntegerField(),
     )).order_by("priority", "-created_at", "-pk")[:6]
