@@ -80,6 +80,12 @@ class BookFlowTest(TestCase):
         self.assertContains(response, "Другие варианты")
         self.assertContains(response, "Пикник на обочине")
 
+    def test_book_owner_cannot_offer_an_exchange_to_self(self):
+        self.client.force_login(self.anna)
+        url = reverse("propose", args=[self.offered.pk])
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertFalse(Exchange.objects.exists())
+
     def test_real_photo_upload_and_invalid_content(self):
         self.client.force_login(self.anna)
         data = {"title": "Книга", "author": "Автор", "description": "Целая", "wanted": "Другую"}
@@ -157,6 +163,13 @@ class BookFlowTest(TestCase):
         self.assertEqual(item.status, Exchange.Status.CANCELLED)
         self.assertEqual(self.offered.status, Book.Status.AVAILABLE)
         self.assertEqual(self.requested.status, Book.Status.AVAILABLE)
+
+    def test_proposer_cannot_accept_own_offer(self):
+        item = exchanges.propose(self.anna, self.offered.pk, self.requested.pk, "Привет!")
+        with self.assertRaises(exchanges.ExchangeError):
+            exchanges.change_status(item.pk, self.anna, "accept")
+        item.refresh_from_db()
+        self.assertEqual(item.status, Exchange.Status.PENDING)
 
     @staticmethod
     def action(item, action):
