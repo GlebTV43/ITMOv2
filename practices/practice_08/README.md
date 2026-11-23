@@ -2,7 +2,7 @@
 
 ## «Дай почитать» · запуск и материалы
 
-Интерфейс использует Django Templates и Bootstrap 5.3.8. Для локального запуска нужны Python и Node.js. В PowerShell из папки `practices/practice_08` выполните:
+Интерфейс использует Django Templates и Bootstrap 5.3.8. Для заголовков используется Lora, для текста и форм — Manrope. Установка зависимостей копирует файлы обоих шрифтов в локальную статику. Для локального запуска нужны Python и Node.js. В PowerShell из папки `practices/practice_08` выполните:
 
 ```powershell
 python -m venv .venv

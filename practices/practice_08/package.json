@@ -2,9 +2,15 @@
   "name": "dai-pochitat-practice-8",
   "private": true,
   "scripts": {
-    "postinstall": "node scripts/copy-bootstrap.cjs",
+    "postinstall": "node scripts/copy-vendor.cjs",
     "test": "playwright test"
   },
-  "dependencies": {"bootstrap": "5.3.8"},
-  "devDependencies": {"@playwright/test": "1.58.2"}
+  "dependencies": {
+    "@fontsource-variable/lora": "5.3.0",
+    "@fontsource-variable/manrope": "5.3.0",
+    "bootstrap": "5.3.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2"
+  }
 }
