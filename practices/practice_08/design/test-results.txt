@@ -1,0 +1,23 @@
+Clean dependency install: npm ci
+
+Chromium / Playwright
+npm test
+
+  ok 1 browser_tests\offer.spec.cjs:32:1 › shows real catalogue cards, combines search filters and recovers from empty results (1.4s)
+  ok 2 browser_tests\offer.spec.cjs:53:1 › renders an empty catalogue response with a way to clear filters (764ms)
+  ok 3 browser_tests\offer.spec.cjs:65:1 › shows required-field and invalid-input errors while keeping the form editable (3.6s)
+  ok 4 browser_tests\offer.spec.cjs:83:1 › locks a delayed submission, ignores double activation, and shows a successful response (3.1s)
+  ok 5 browser_tests\offer.spec.cjs:112:1 › keeps filled values after a failed request and lets the reader retry (3.4s)
+  ok 6 browser_tests\offer.spec.cjs:140:1 › runs the complete flow against Django on a narrow screen and shows the offer to the owner (5.2s)
+  6 passed (25.3s)
+
+Django
+python manage.py test
+
+Ran 7 tests in 2.310s
+OK
+System check identified no issues (0 silenced).
+
+Negative control (initial verification)
+Hiding the network error banner made the retry test fail on getByRole(alert).
+The original implementation was restored before the full successful run.

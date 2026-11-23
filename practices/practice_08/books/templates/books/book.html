@@ -1,0 +1,26 @@
+{% extends "books/base.html" %}
+{% block title %}{{ book.title }} · Дай почитать{% endblock %}
+{% block content %}
+<nav class="crumbs" aria-label="Путь к странице"><a href="{% url 'catalog' %}">Каталог</a><span aria-hidden="true">/</span><span>{{ book.title }}</span></nav>
+<article class="card book-detail">
+  <img class="detail-photo" src="{{ book.photo.url }}" alt="Фото состояния книги «{{ book.title }}»">
+  <div class="detail-copy">
+    <span class="badge {% if book.status == 'available' %}status-available{% else %}text-bg-secondary{% endif %}">{{ book.get_status_display }}</span>
+    <h1>{{ book.title }}</h1>
+    <p class="book-author">{{ book.author }}</p>
+    <section class="detail-section"><h2>Описание и состояние</h2><p>{{ book.description|linebreaksbr }}</p></section>
+    <section class="detail-section"><h2>На что обменяет</h2><p>{{ book.wanted|linebreaksbr }}</p></section>
+    <p class="owner-link">Владелец · <a href="{% url 'profile' book.owner_id %}">{{ book.owner.first_name|default:"Читатель" }}</a></p>
+    {% if book.status == 'available' and user.pk != book.owner_id %}
+      <a class="btn btn-primary" href="{% url 'propose' book.pk %}">Предложить обмен</a>
+    {% endif %}
+  </div>
+</article>
+<section class="catalog-results" aria-labelledby="related-title">
+  <div class="section-heading"><h2 id="related-title">Другие варианты</h2></div>
+  <div class="cards">
+    {% for option in related %}{% include "books/card.html" with book=option %}
+    {% empty %}<p>Других вариантов пока нет.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

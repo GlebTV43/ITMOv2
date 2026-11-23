@@ -1,0 +1,34 @@
+{% extends "books/base.html" %}
+{% block title %}Обмен · Дай почитать{% endblock %}
+{% block content %}
+<nav class="crumbs" aria-label="Путь к странице"><a href="{% url 'exchanges' %}">Мои обмены</a><span aria-hidden="true">/</span><span>Предложение</span></nav>
+<h1>{{ exchange.offered.title }} ↔ {{ exchange.requested.title }}</h1>
+<p><span class="badge status-available">{{ exchange.get_status_display }}</span>{% if exchange.cancel_requested_by_id %} · Запрошена отмена{% endif %}</p>
+<ul class="rows">
+  <li><a href="{% url 'profile' exchange.offered.owner_id %}">{{ exchange.offered.owner.first_name }}</a>
+    <span>{% if exchange.proposer_received %}Подтверждено получение{% else %}Получение не подтверждено{% endif %} · «{{ exchange.requested.title }}»</span></li>
+  <li><a href="{% url 'profile' exchange.requested.owner_id %}">{{ exchange.requested.owner.first_name }}</a>
+    <span>{% if exchange.recipient_received %}Подтверждено получение{% else %}Получение не подтверждено{% endif %} · «{{ exchange.offered.title }}»</span></li>
+</ul>
+{% if exchange.status == 'accepted' or exchange.status == 'disputed' %}
+  <p>Договоритесь о встрече. Сверьте обе книги с фотографиями и подтвердите получение после передачи.</p>
+{% endif %}
+<div class="actions">
+  {% for action, label in actions.items %}
+  <form action="{% url 'exchange_action' exchange.pk action %}" method="post">{% csrf_token %}<button class="btn btn-outline-primary">{{ label }}</button></form>
+  {% endfor %}
+</div>
+<section class="narrow">
+  <h2>Переписка</h2>
+  {% for entry in chat %}
+  <article class="chat">
+    <strong>{{ entry.sender.first_name|default:"Читатель" }}</strong>
+    <time datetime="{{ entry.created_at|date:'c' }}">{{ entry.created_at|date:"d.m.Y H:i" }}</time>
+    <p>{{ entry.text|linebreaksbr }}</p>
+  </article>
+  {% endfor %}
+  {% if chat_open %}
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Отправить</button></form>
+  {% endif %}
+</section>
+{% endblock %}

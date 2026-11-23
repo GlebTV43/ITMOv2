@@ -1,0 +1,11 @@
+<article class="card book-card">
+  <a class="book-card-link" href="{% url 'book' book.pk %}">
+    <img class="card-img-top" loading="lazy" src="{{ book.photo.url }}" alt="">
+    <div class="card-body">
+      <h3 class="card-title">{{ book.title }}</h3>
+      <p class="book-author">{{ book.author }}</p>
+      {% if book.status == 'reserved' %}<p class="badge text-bg-warning">Зарезервирована</p>{% endif %}
+      <p class="book-wanted">В обмен · {{ book.wanted|truncatechars:65 }}</p>
+    </div>
+  </a>
+</article>

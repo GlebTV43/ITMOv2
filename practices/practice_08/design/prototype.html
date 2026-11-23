@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дай почитать — макет обмена</title>
+<link rel="stylesheet" href="../books/static/books/vendor/lora/index.css">
+<link rel="stylesheet" href="../books/static/books/vendor/manrope/index.css">
+<style>
+  :root {font: 16px/1.55 'Manrope Variable',system-ui,sans-serif; color:#172c23; background:#f7f8f3}
+  body {max-width:1060px;margin:auto;padding:24px}
+  h1,h2,h3,nav strong {font-family:'Lora Variable',Georgia,serif;line-height:1.1}
+  h1 {font-size:clamp(2.6rem,6vw,4.4rem);margin:0 0 20px}
+  h2 {font-size:2rem} a {color:inherit}
+  nav, .states {display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  nav {justify-content:space-between;margin-bottom:24px}
+  .states {border-bottom:1px solid #cdd8cd;margin-bottom:24px;padding-bottom:16px}
+  .hero,.panel,.card {border-radius:18px;padding:clamp(18px,4vw,40px)}
+  .hero {background:#173b2c;color:#fff;display:grid;grid-template-columns:1fr .8fr;gap:24px}
+  .panel,.card {background:#fff;border:1px solid #dbe1d7}
+  .grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .grid .card {padding:14px}
+  .detail {display:grid;grid-template-columns:1fr 2fr;gap:20px}
+  .search {display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;position:relative;margin:-16px 16px 0;padding:14px}
+  .offer {display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start}
+  .picture {display:grid;place-items:center;min-height:160px;border-radius:12px;background:#dbe7d2;color:#23422d}
+  .hero .picture {background:#b6c6a4;min-height:220px}
+  label {display:block;margin-top:12px}
+  input,select,textarea {display:block;box-sizing:border-box;width:100%;max-width:38rem;padding:12px;border:1px solid #809487;border-radius:8px;font:inherit}
+  button {font:inherit;cursor:pointer;border:1px solid #315f46;border-radius:9px;padding:8px 12px;background:white;color:#22432f}
+  button[aria-pressed="true"],button.primary {background:#20583c;color:white}
+  button:disabled {opacity:.72;cursor:wait}
+  :focus-visible {outline:3px solid #216942;outline-offset:3px}
+  .error {padding:12px;background:#fae6e3;color:#842023;border-radius:8px}
+  .success {padding:12px;background:#e1efe2;color:#1e5135;border-radius:8px}
+  @media(max-width:640px){.hero,.detail,.offer,.search {grid-template-columns:1fr}.grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<nav><strong>Дай почитать</strong><span>Каталог · Обмены · Профиль</span></nav>
+<header class="states" aria-label="Экраны макета">
+  <button type="button" data-view="catalog">Каталог</button>
+  <button type="button" data-view="empty">Пустая выдача</button>
+  <button type="button" data-view="book">Карточка</button>
+  <button type="button" data-view="offer">Предложение</button>
+  <button type="button" data-view="pending">Загрузка</button>
+  <button type="button" data-view="error">Ошибка</button>
+  <button type="button" data-view="success">Результат</button>
+</header>
+<main id="screen"></main>
+<template id="catalog">
+  <section class="hero"><div><h1>Прочитал?<br>Дай почитать другим.</h1><p>Дай книжке новую жизнь. Найди следующую историю и передай свою дальше.</p></div><div class="picture">Фото книг</div></section>
+  <form class="panel search" data-search><label>Что ищешь<input name="q" placeholder="Название или автор"></label><label>Что готов отдать<input name="offer" placeholder="Название книги"></label><button class="primary">Найти книги</button></form>
+  <h2>Книги к обмену</h2><p>Найдено 4</p>
+  <div class="grid">
+    <article class="card"><div class="picture">Фото экземпляра</div><h3>Дюна</h3><p>Фрэнк Герберт</p><button data-view="book">Открыть карточку</button></article>
+    <article class="card"><div class="picture">Фото экземпляра</div><h3>Марсианин</h3><p>Энди Вейер</p></article>
+    <article class="card"><div class="picture">Фото экземпляра</div><h3>Sapiens</h3><p>Юваль Ной Харари</p></article>
+    <article class="card"><div class="picture">Фото экземпляра</div><h3>Граф Монте-Кристо</h3><p>Александр Дюма</p></article>
+  </div>
+</template>
+<template id="empty">
+  <section class="panel"><h2>Книг по этому запросу пока нет.</h2><p>Попробуй изменить название или очистить фильтры.</p><button data-view="catalog">Сбросить фильтры</button></section>
+</template>
+<template id="book">
+  <article class="panel detail"><div class="picture">Фото состояния</div><div><h1>Дюна</h1><p>Фрэнк Герберт · Доступна</p><h3>Описание и состояние</h3><p>Твёрдый переплёт, есть небольшие потёртости.</p><h3>На что обменяет</h3><p>На научную фантастику.</p><button class="primary" data-view="offer">Предложить обмен</button></div></article>
+</template>
+<template id="offer">
+  <div class="offer"><section class="panel"><h2>Предложить обмен</h2>
+    <div data-error class="error" hidden>Выберите книгу и напишите сообщение.</div>
+    <label>Какую книгу предлагаете<select><option>Выберите книгу</option><option>Марсианин</option></select></label>
+    <label>Сообщение владельцу<textarea rows="3" placeholder="Напишите, что предлагаете"></textarea></label>
+    <p><button class="primary" data-view="pending">Отправить предложение</button> <button data-view="book">Назад к книге</button></p>
+    <p data-loading hidden role="status">Отправляем предложение…</p>
+  </section><aside class="card"><div class="picture">Фото состояния</div><h3>Дюна</h3><p>Фрэнк Герберт</p><p>Владелец · Илья</p></aside></div>
+</template>
+<template id="success">
+  <section class="panel"><p class="success">Предложение отправлено. Дождитесь ответа владельца.</p><h2>Марсианин ↔ Дюна</h2><p>На рассмотрении</p><h3>Переписка</h3><p>Привет! Предлагаю «Марсианина» в хорошем состоянии.</p><button data-view="catalog">Вернуться в каталог</button></section>
+</template>
+<script>
+  const screen=document.querySelector('#screen');
+  function show(name) {
+    const template=document.getElementById(['pending','error'].includes(name)?'offer':name);
+    screen.replaceChildren(template.content.cloneNode(true));
+    if(name==='error') screen.querySelector('[data-error]').hidden=false;
+    if(name==='pending') {
+      screen.querySelector('[data-view="pending"]').disabled=true;
+      screen.querySelector('[data-loading]').hidden=false;
+    }
+    for(const button of document.querySelectorAll('.states button')) button.setAttribute('aria-pressed',String(button.dataset.view===name));
+  }
+  let simulatedRequest;
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('button[data-view]');
+    if(!button) return;
+    clearTimeout(simulatedRequest);
+    show(button.dataset.view);
+    if(button.dataset.view==='pending' && !button.closest('.states')) {
+      simulatedRequest=setTimeout(()=>show('success'),950);
+    }
+  });
+  document.addEventListener('submit',event=>{
+    if(!event.target.matches('[data-search]')) return;
+    event.preventDefault();
+    const filters=[...new FormData(event.target).values()].map(value=>value.trim().toLowerCase()).filter(Boolean);
+    show(filters.every(term=>['дюна','герберт','марсианин'].some(book=>book.includes(term)))?'catalog':'empty');
+  });
+  show('catalog');
+</script>
+</html>

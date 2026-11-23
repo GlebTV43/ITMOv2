@@ -1,0 +1,38 @@
+{% extends "books/base.html" %}
+{% load static %}
+{% block content %}
+<section class="catalog-hero" aria-labelledby="catalog-heading">
+  <div class="hero-copy">
+    <h1 id="catalog-heading">Прочитал?<br><em>Дай почитать другим.</em></h1>
+    <p>Дай книжке новую жизнь. Найди следующую историю и передай свою дальше.</p>
+  </div>
+  <img class="hero-photo" src="{% static 'books/reading-room.webp' %}" alt="" fetchpriority="high">
+</section>
+<form method="get" class="search-panel card" aria-label="Поиск книг">
+  <div><label class="form-label" for="catalog-q">Что ищешь</label><input class="form-control" id="catalog-q" name="q" value="{{ search }}" maxlength="180" placeholder="Название или автор"></div>
+  <div><label class="form-label" for="catalog-offer">Что готов отдать</label><input class="form-control" id="catalog-offer" name="offer" value="{{ offer }}" maxlength="180" placeholder="Название книги"></div>
+  <button class="btn btn-primary">Найти книги</button>
+</form>
+<section aria-labelledby="catalog-results" class="catalog-results">
+  <div class="section-heading">
+    <h2 id="catalog-results">{% if search or offer %}Результаты поиска{% else %}Книги к обмену{% endif %}</h2>
+    {% if page.paginator.count %}<span>Найдено {{ page.paginator.count }}</span>{% endif %}
+  </div>
+  {% if page %}
+    <div class="cards">{% for book in page %}{% include "books/card.html" %}{% endfor %}</div>
+  {% else %}
+    <div class="empty-state card">
+      <h3>Книг по этому запросу пока нет.</h3>
+      <p>Попробуй изменить запрос или вернуться ко всем книгам.</p>
+      <div><a class="btn btn-outline-primary" href="{% url 'catalog' %}">Сбросить фильтры</a></div>
+    </div>
+  {% endif %}
+  {% if page.has_other_pages %}
+    <nav class="catalog-pagination" aria-label="Страницы каталога">
+      {% if page.has_previous %}<a class="btn btn-outline-primary" href="{% querystring page=page.previous_page_number %}">Назад</a>{% endif %}
+      <span>Страница {{ page.number }} из {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a class="btn btn-outline-primary" href="{% querystring page=page.next_page_number %}">Дальше</a>{% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% endblock %}
