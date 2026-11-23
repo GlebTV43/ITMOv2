@@ -1,0 +1,754 @@
+{
+  "id": "practice072Weekly",
+  "name": "7.2 · Недельный отчёт «Дай почитать»",
+  "nodes": [
+    {
+      "id": "7c6fbeb6-2e6e-edb1-bdb6-c40c0b00bc8a",
+      "name": "Понедельник · 09:00 МСК",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * MON"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "98e992c3-7d87-e934-9be1-034100fe81f2",
+      "name": "Вручную · отчёт для проверки",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        240
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "adb2dae1-dd96-32cf-6baf-0bfa5517fa5a",
+      "name": "Период тестового отчёта",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        240
+      ],
+      "parameters": {
+        "jsCode": "const weekEnding = ''; // При необходимости ISO-дата понедельника.\nreturn [{json:{weekEnding}}];"
+      }
+    },
+    {
+      "id": "16b80c99-ac75-d371-9f26-ff5f2b569b6e",
+      "name": "Задать неделю и четыре запроса",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const definitions = [[\"issues_opened\",\"Открытые Issues\",\"is:issue label:practice-7.2\",\"created\",\"created_at\"],[\"issues_closed\",\"Закрытые Issues\",\"is:issue label:practice-7.2 is:closed\",\"closed\",\"closed_at\"],[\"prs_opened\",\"Открытые PR\",\"is:pr base:demo/practice-07.2-booksharing\",\"created\",\"created_at\"],[\"prs_merged\",\"Слитые PR\",\"is:pr base:demo/practice-07.2-booksharing is:merged\",\"merged\",null]];\nconst time = $now.setZone('Europe/Moscow');\nconst override = $input.first().json.weekEnding;\nconst parts = typeof override === 'string' ? override.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/) : null;\nconst end = parts ? time.set({year:Number(parts[1]),month:Number(parts[2]),day:Number(parts[3])}).startOf('day') : time.startOf('week');\nif (override && (!parts || end.toISODate() !== override)) throw new Error('Неверная дата окончания недели.');\nif (!end.isValid || end.weekday !== 1 || end > time.startOf('week').plus({weeks:1})) {\n  throw new Error('Укажите дату понедельника в формате YYYY-MM-DD.');\n}\nconst start = end.minus({weeks:1});\nconst lastSecond = end.minus({seconds:1});\nconst urls = Object.fromEntries(definitions.map(([key, , qualifier, dateField]) => {\n  const query = 'repo:GlebTV43/ITMOv2 ' + qualifier + ' ' + dateField + ':' +\n    start.toUTC().toISO({suppressMilliseconds:true}) + '..' + lastSecond.toUTC().toISO({suppressMilliseconds:true});\n  return [key, 'https://api.github.com/search/issues?per_page=100&q=' + encodeURIComponent(query)];\n}));\nreturn [{json:{weekStart:start.toISODate(), weekEnd:end.toISODate(), startUtc:start.toUTC().toISO(),\n  endUtc:end.toUTC().toISO(), previousWeekEnd:start.toISODate(), testPeriod:Boolean(override), urls}}];"
+      }
+    },
+    {
+      "id": "11a6e636-5f1c-74d7-4421-56969ea517cc",
+      "name": "GitHub · Открытые Issues",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "responseContainsNextURL",
+              "nextURL": "={{ ($response.headers.link || '').split(',').map(part => part.trim()).find(part => part.endsWith('rel=\"next\"'))?.match(/<([^>]+)>/)?.[1] || '' }}",
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !($response.headers.link || '').includes('rel=\"next\"') }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "url": "={{ $('Задать неделю и четыре запроса').first().json.urls.issues_opened }}"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "475e2140-54a9-b8bb-449e-15f696e1e4a5",
+      "name": "GitHub · Закрытые Issues",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "responseContainsNextURL",
+              "nextURL": "={{ ($response.headers.link || '').split(',').map(part => part.trim()).find(part => part.endsWith('rel=\"next\"'))?.match(/<([^>]+)>/)?.[1] || '' }}",
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !($response.headers.link || '').includes('rel=\"next\"') }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "url": "={{ $('Задать неделю и четыре запроса').first().json.urls.issues_closed }}"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "0b505305-4860-f39f-614e-5d150d70b57a",
+      "name": "GitHub · Открытые PR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1300,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "responseContainsNextURL",
+              "nextURL": "={{ ($response.headers.link || '').split(',').map(part => part.trim()).find(part => part.endsWith('rel=\"next\"'))?.match(/<([^>]+)>/)?.[1] || '' }}",
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !($response.headers.link || '').includes('rel=\"next\"') }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "url": "={{ $('Задать неделю и четыре запроса').first().json.urls.prs_opened }}"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "7c476123-e2ca-2e5d-829c-722d8f2a4061",
+      "name": "GitHub · Слитые PR",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "responseContainsNextURL",
+              "nextURL": "={{ ($response.headers.link || '').split(',').map(part => part.trim()).find(part => part.endsWith('rel=\"next\"'))?.match(/<([^>]+)>/)?.[1] || '' }}",
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !($response.headers.link || '').includes('rel=\"next\"') }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "url": "={{ $('Задать неделю и четыре запроса').first().json.urls.prs_merged }}"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "ea31e2d2-c812-3fc2-ab02-3ae3e9cd74ca",
+      "name": "Сгруппировать по типу и автору",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const window = $('Задать неделю и четыре запроса').first().json;\nconst steps = [[\"issues_opened\",\"Открытые Issues\",\"created_at\",\"GitHub · Открытые Issues\"],[\"issues_closed\",\"Закрытые Issues\",\"closed_at\",\"GitHub · Закрытые Issues\"],[\"prs_opened\",\"Открытые PR\",\"created_at\",\"GitHub · Открытые PR\"],[\"prs_merged\",\"Слитые PR\",null,\"GitHub · Слитые PR\"]];\nconst counts = {};\nconst types = {bug:0,task:0,feature:0,unknown:0,other:0};\nconst authors = Object.create(null);\nfunction category(row) {\n  const labels = new Set((row.labels || []).map(label => label.name));\n  if (labels.has('needs-triage')) return 'unknown';\n  if (labels.has('bug')) return 'bug';\n  if (labels.has('task')) return 'task';\n  if (labels.has('feature-request')) return 'feature';\n  return 'other';\n}\nfor (const [key, , field, node] of steps) {\n  const pages = $(node).all().map(item => item.json.body ?? item.json);\n  if (!pages.length || pages.some(page => !Array.isArray(page.items) || page.incomplete_results)) {\n    throw new Error('GitHub search result is incomplete for ' + key);\n  }\n  const items = new Map(pages.flatMap(page => page.items).map(row => [row.id, row]));\n  if (items.size !== pages[0].total_count) throw new Error('Incomplete pagination for ' + key);\n  const selected = [...items.values()].filter(row => !field ||\n    (row[field] && Date.parse(row[field]) >= Date.parse(window.startUtc) && Date.parse(row[field]) < Date.parse(window.endUtc)));\n  counts[key] = selected.length;\n  for (const row of selected) {\n    const author = row.user?.login ?? 'unknown';\n    authors[author] ??= {issues_opened:0,issues_closed:0,prs_opened:0,prs_merged:0};\n    authors[author][key]++;\n    if (key === 'issues_opened') types[category(row)]++;\n  }\n}\nreturn [{json:{...window,counts,types,authors}}];"
+      }
+    },
+    {
+      "id": "a0ca26c1-51dc-fa52-5d24-1347ae3a9ab7",
+      "name": "Создать таблицу недельных отчётов",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        0
+      ],
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "practice_07_2_weekly_stats",
+        "columns": {
+          "column": [
+            {
+              "name": "week_end",
+              "type": "string"
+            },
+            {
+              "name": "week_start",
+              "type": "string"
+            },
+            {
+              "name": "counts_json",
+              "type": "string"
+            },
+            {
+              "name": "types_json",
+              "type": "string"
+            },
+            {
+              "name": "authors_json",
+              "type": "string"
+            },
+            {
+              "name": "gmail_message_id",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      }
+    },
+    {
+      "id": "59321e45-fc57-e7bb-a155-d9eead593515",
+      "name": "Прочитать прошлую неделю",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2340,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Создать таблицу недельных отчётов').first().json.id }}"
+        },
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_end",
+              "condition": "eq",
+              "keyValue": "={{ $('Сгруппировать по типу и автору').first().json.previousWeekEnd }}"
+            }
+          ]
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "71ec5b93-252a-f97e-b788-b3dbf3eb72f2",
+      "name": "Посчитать Δ к прошлой неделе",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const current = $('Сгруппировать по типу и автору').first().json;\nconst row = $input.first().json;\nconst previous = row.week_end === current.previousWeekEnd ? JSON.parse(row.counts_json) : null;\nconst previousTypes = previous ? JSON.parse(row.types_json) : null;\nconst difference = (counts, old) => Object.fromEntries(Object.entries(counts).map(([key, value]) =>\n  [key, old ? value - (old[key] ?? 0) : null]));\nreturn [{json:{...current, previousSource:previous ? row.source : null,\n  delta:difference(current.counts,previous), typeDelta:difference(current.types,previousTypes)}}];"
+      }
+    },
+    {
+      "id": "50f96a9b-f6ac-3cdc-a702-9f37ed61a108",
+      "name": "Сформулировать AI-комментарий недели",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        2860,
+        0
+      ],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ [\n    'Составь до трёх кратких предложений по статистике GitHub для русскоязычной команды.',\n    'Используй только числа из входа. Не выдумывай причин. Если delta отсутствует, явно укажи, что сравнения нет.',\n    JSON.stringify({counts:$json.counts,types:$json.types,delta:$json.delta,typeDelta:$json.typeDelta})\n  ].join('\\n') }}",
+        "hasOutputParser": false,
+        "batching": {}
+      }
+    },
+    {
+      "id": "b193043b-ab4d-fa41-0083-68aeb71bec39",
+      "name": "Сформулировать AI-комментарий недели · VseLLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2860,
+        220
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "openai/gpt-4.1-mini"
+        },
+        "options": {
+          "baseURL": "https://litellm.data-light.ru/v1",
+          "temperature": 0.1,
+          "maxTokens": 500,
+          "timeout": 60000,
+          "maxRetries": 1
+        }
+      }
+    },
+    {
+      "id": "30dadd3c-966c-7d0d-1a62-c9a271a84674",
+      "name": "Собрать HTML-отчёт",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const stats = $('Посчитать Δ к прошлой неделе').first().json;\nconst data = $input.first().json;\nconst note = [data.text,data.output].find(value => typeof value === 'string' && value.trim())?.trim();\nif (!note) throw new Error('AI-комментарий недели пуст.');\nconst escape = value => String(value).replace(/[&<>\"']/g, character =>\n  ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'})[character]);\nconst table = (headers, rows) => '<table border=\"1\" cellpadding=\"7\" cellspacing=\"0\"><thead><tr>' +\n  headers.map(label => '<th>' + escape(label) + '</th>').join('') + '</tr></thead><tbody>' +\n  rows.map(row => '<tr>' + row.map(value => '<td>' + escape(value) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';\nconst formatDelta = n => n === null ? '—' : (n > 0 ? '+' : '') + n;\nconst titles = {\"issues_opened\":\"Открытые Issues\",\"issues_closed\":\"Закрытые Issues\",\"prs_opened\":\"Открытые PR\",\"prs_merged\":\"Слитые PR\"};\nconst goal = Object.entries(stats.counts).map(([key,n]) => [titles[key],n,formatDelta(stats.delta[key])]);\nconst types = Object.entries(stats.types).map(([key,n]) => [key,n,formatDelta(stats.typeDelta[key])]);\nconst authors = Object.entries(stats.authors).sort(([a],[b]) => a.localeCompare(b)).map(([name,row]) =>\n  [name,row.issues_opened,row.issues_closed,row.prs_opened,row.prs_merged]);\nconst heading = stats.testPeriod ? 'Тестовый недельный отчёт' : 'Недельный отчёт';\nlet html = '<h1>' + heading + ' · Дай почитать</h1><p>' + escape(stats.weekStart) + ' — ' + escape(stats.weekEnd) +\n  ' (правая граница не включена, МСК)</p>';\nif (!stats.previousSource) html += '<p>Данных для сравнения с прошлой неделей нет.</p>';\nif (stats.previousSource === 'fixture') html += '<p>Предыдущая неделя взята из тестовой записи.</p>';\nhtml += '<h2>Показатели</h2>' + table(['Метрика','Количество','Δ'],goal) +\n  '<h2>Новые Issues по типу</h2>' + table(['Тип','Количество','Δ'],types) + '<h2>По авторам</h2>' +\n  (authors.length ? table(['Автор','Открыто Issues','Закрыто Issues','Открыто PR','Слито PR'],authors) : '<p>Записей нет.</p>') +\n  '<h2>AI-комментарий недели</h2><p>' + escape(note) + '</p>';\nreturn [{json:{...stats,subject:heading + ' · Дай почитать · ' + stats.weekStart, html}}];"
+      }
+    },
+    {
+      "id": "df2ee16c-1807-99a3-b5ef-ca460ccd5ab8",
+      "name": "Отправить HTML через Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3380,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "d5241c89-463d-4c73-b1d1-1970f24844bc",
+      "name": "Подготовить запись недели",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3640,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const sent = $input.first().json;\nif (!sent.id) throw new Error('Gmail не подтвердил отправку.');\nconst s = $('Собрать HTML-отчёт').first().json;\nreturn [{json:{week_end:s.weekEnd,week_start:s.weekStart,counts_json:JSON.stringify(s.counts),\ntypes_json:JSON.stringify(s.types),authors_json:JSON.stringify(s.authors),gmail_message_id:sent.id,source:'gmail'}}];"
+      }
+    },
+    {
+      "id": "1b8b88cc-428c-5fd9-a0a5-f87a2ef20f89",
+      "name": "Сохранить запись недели",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3900,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Создать таблицу недельных отчётов').first().json.id }}"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week_end",
+              "condition": "eq",
+              "keyValue": "={{ $json.week_end }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "week_end": "={{ $json.week_end }}",
+            "week_start": "={{ $json.week_start }}",
+            "counts_json": "={{ $json.counts_json }}",
+            "types_json": "={{ $json.types_json }}",
+            "authors_json": "={{ $json.authors_json }}",
+            "gmail_message_id": "={{ $json.gmail_message_id }}",
+            "source": "={{ $json.source }}"
+          },
+          "schema": [
+            {
+              "id": "week_end",
+              "displayName": "week_end",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "week_start",
+              "displayName": "week_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "counts_json",
+              "displayName": "counts_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "types_json",
+              "displayName": "types_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "authors_json",
+              "displayName": "authors_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gmail_message_id",
+              "displayName": "gmail_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Сформулировать AI-комментарий недели · VseLLM": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Сформулировать AI-комментарий недели",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Понедельник · 09:00 МСК": {
+      "main": [
+        [
+          {
+            "node": "Задать неделю и четыре запроса",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Вручную · отчёт для проверки": {
+      "main": [
+        [
+          {
+            "node": "Период тестового отчёта",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Период тестового отчёта": {
+      "main": [
+        [
+          {
+            "node": "Задать неделю и четыре запроса",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Задать неделю и четыре запроса": {
+      "main": [
+        [
+          {
+            "node": "GitHub · Открытые Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub · Открытые Issues": {
+      "main": [
+        [
+          {
+            "node": "GitHub · Закрытые Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub · Закрытые Issues": {
+      "main": [
+        [
+          {
+            "node": "GitHub · Открытые PR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub · Открытые PR": {
+      "main": [
+        [
+          {
+            "node": "GitHub · Слитые PR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub · Слитые PR": {
+      "main": [
+        [
+          {
+            "node": "Сгруппировать по типу и автору",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сгруппировать по типу и автору": {
+      "main": [
+        [
+          {
+            "node": "Создать таблицу недельных отчётов",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Создать таблицу недельных отчётов": {
+      "main": [
+        [
+          {
+            "node": "Прочитать прошлую неделю",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Прочитать прошлую неделю": {
+      "main": [
+        [
+          {
+            "node": "Посчитать Δ к прошлой неделе",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Посчитать Δ к прошлой неделе": {
+      "main": [
+        [
+          {
+            "node": "Сформулировать AI-комментарий недели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Сформулировать AI-комментарий недели": {
+      "main": [
+        [
+          {
+            "node": "Собрать HTML-отчёт",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Собрать HTML-отчёт": {
+      "main": [
+        [
+          {
+            "node": "Отправить HTML через Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Отправить HTML через Gmail": {
+      "main": [
+        [
+          {
+            "node": "Подготовить запись недели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Подготовить запись недели": {
+      "main": [
+        [
+          {
+            "node": "Сохранить запись недели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "timezone": "Europe/Moscow"
+  },
+  "pinData": {},
+  "tags": []
+}
