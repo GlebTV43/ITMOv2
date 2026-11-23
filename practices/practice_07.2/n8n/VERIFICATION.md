@@ -39,8 +39,15 @@ Execution №103 повторно прочитал Issue №10 и останов
 - [Две недели в Data Table](evidence/data-table-7.2.jpg)
 - [Полученное письмо из Gmail](evidence/gmail-inbox-report.jpg) и [разрез по авторам с AI-комментарием](evidence/gmail-inbox-comment.jpg)
 - [PR после автоисправления](evidence/pr-13-merged.jpg)
+- [GitHub Recent Deliveries · issues.opened · HTTP 200](evidence/github-issue-opened-200.jpg)
+- [Успешный запуск n8n Cloud · №1](evidence/cloud-execution-1.jpg)
 
-## Что осталось подтвердить
+## Прямая доставка GitHub по HTTPS
 
-- Прямая доставка события `issues.opened` от GitHub требует доступного GitHub HTTPS-адреса n8n. Продемонстрированные запуски прочитали реальные Issues через GitHub API после локального запуска.
-- В условии сверхрезультата указана основная ветка. PR №13 слился в согласованную демо-ветку приложения. Для зачёта этого варианта нужна оценка преподавателя.
+23 ноября 2026 года GitHub доставил событие `issues.opened` для [контрольного Issue №15](https://github.com/GlebTV43/ITMOv2/issues/15) в n8n Cloud. GitHub зарегистрировал ответ `HTTP 200` в 11:42 МСК. [Execution №1](https://avitoaiforme.app.n8n.cloud/workflow/H4nargdxxhyfxLcR/executions/1) завершился успешно. Классификатор VseLLM вернул `task` с уверенностью `1.00`. Сценарий добавил лейблы `task` и `practice-7.2`, опубликовал ответ и сохранил ID обращения в Data Table.
+
+После прогона тестовый workflow снят с публикации. В списке Webhooks форка проверочная подписка больше не отображалась. Скриншоты выше останутся доступны после завершения пробного периода n8n Cloud.
+
+## Целевая ветка сверхрезультата
+
+В условии указана основная ветка. PR №13 слился в согласованную демо-ветку приложения. Для зачёта этого варианта нужна оценка преподавателя.
