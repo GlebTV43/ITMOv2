@@ -1,0 +1,8 @@
+<article class="card">
+  <a href="{% url 'book' book.pk %}">
+    <img loading="lazy" src="{{ book.photo.url }}" alt="Фото книги «{{ book.title }}»">
+    <strong>{{ book.title }}</strong>
+  </a>
+  <p>{{ book.author }}</p>
+  {% if book.status == 'reserved' %}<p>Зарезервирована</p>{% endif %}
+</article>

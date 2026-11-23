@@ -1,0 +1,22 @@
+{% extends "books/base.html" %}
+{% block content %}
+<h1>{{ member.first_name|default:"Читатель" }}</h1>
+<p>Почта подтверждена · Завершённых обменов: {{ history|length }}</p>
+<h2>Книги к обмену</h2>
+<div class="cards">
+  {% for book in listings %}{% include "books/card.html" %}
+  {% empty %}<p>Книг к обмену пока нет.</p>{% endfor %}
+</div>
+<h2>Уже прочитано</h2>
+{% if member.pk == user.pk %}<a href="{% url 'add_read_book' %}">Добавить книгу</a>{% endif %}
+<ul>
+  {% for book in read_books %}<li>{{ book.title }} · {{ book.author }}</li>
+  {% empty %}<li>Список пока пуст.</li>{% endfor %}
+</ul>
+<h2>История обменов</h2>
+<ul>
+  {% for item in history %}
+    <li>{{ item.offered.title }} ↔ {{ item.requested.title }} · {{ item.closed_at|date:"d.m.Y" }}</li>
+  {% empty %}<li>Завершённых обменов пока нет.</li>{% endfor %}
+</ul>
+{% endblock %}
